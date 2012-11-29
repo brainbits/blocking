@@ -1,0 +1,22 @@
+{
+    "name": "brainbits/blocking",
+    "description": "Object blocking",
+    "keywords": [],
+    "homepage": "http://brainbits.net",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Stephan Wentz",
+            "email": "swentz@brainbits.net"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "mikey179/vfsStream": "1.1.*",
+        "symfony/http-foundation": "2.1.*"
+    },
+    "autoload": {
+        "psr-0": { "Brainbits": "src/" }
+    },
+    "minimum-stability": "stable"
+}
