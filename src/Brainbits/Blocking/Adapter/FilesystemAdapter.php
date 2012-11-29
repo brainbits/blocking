@@ -111,6 +111,24 @@ class FilesystemAdapter implements AdapterInterface
      */
     protected function getFilename(IdentifierInterface $identifier)
     {
-        return $this->root . '/' . $identifier;
+        return $this->ensureDirectoryExists($this->root) . '/' . $identifier;
+    }
+
+    /**
+     * Ensure directory exists
+     *
+     * @param string $filename
+     * @return string
+     * @throws \Exception
+     */
+    protected function ensureDirectoryExists($dirname)
+    {
+        if (!file_exists($dirname)) {
+            if (!mkdir($dirname, 0777, true)) {
+                throw new \Exception('Can\'t create block dir ' . $dirname);
+            }
+        }
+
+        return $dirname;
     }
 }
