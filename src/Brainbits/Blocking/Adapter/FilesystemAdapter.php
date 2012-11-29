@@ -13,12 +13,12 @@ use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Block;
 
 /**
- * File block adapter
+ * Filesystem block adapter
  * Uses files for storing block information
  *
  * @author  Stephan Wentz <sw@brainbits.net>
  */
-class FileAdapter implements AdapterInterface
+class FilesystemAdapter implements AdapterInterface
 {
     /**
      * @var string

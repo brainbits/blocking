@@ -14,11 +14,11 @@ use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Identifier\Identifier;
 
 /**
- * File adapter test
+ * Filesystem adapter test
  *
  * @author  Stephan Wentz <sw@brainbits.net>
  */
-class FileAdapterTest extends TestCase
+class FilesystemAdapterTest extends TestCase
 {
     /**
      * @var FileAdapter
@@ -35,7 +35,7 @@ class FileAdapterTest extends TestCase
         vfsStream::setup('blockDir');
 
         $this->root = vfsStream::url('blockDir');
-        $this->adapter = new FileAdapter($this->root);
+        $this->adapter = new FilesystemAdapter($this->root);
         $this->ownerMock = $this->getMockBuilder('Brainbits\Blocking\Owner\OwnerInterface')
             ->disableOriginalConstructor()
             ->getMock();
