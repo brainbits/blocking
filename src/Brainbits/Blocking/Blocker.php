@@ -26,12 +26,18 @@ class Blocker
     protected $adapter;
 
     /**
+     * @var OwnerInterface
+     */
+    protected $owner;
+
+    /**
      * @var ValidatorInterface
      */
     protected $validator;
 
     /**
      * @param AdapterInterface   $adapter
+     * @param OwnerInterface     $owner
      * @param ValidatorInterface $validator
      */
     public function __construct(AdapterInterface $adapter, OwnerInterface $owner, ValidatorInterface $validator)
