@@ -88,8 +88,7 @@ class FilesystemAdapter implements AdapterInterface
      */
     public function get(IdentifierInterface $identifier)
     {
-        if (!$this->exists($identifier))
-        {
+        if (!$this->exists($identifier)) {
             return null;
         }
 
