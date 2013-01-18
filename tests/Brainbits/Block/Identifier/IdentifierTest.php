@@ -2,8 +2,8 @@
 /**
  * This file is part of the brainbits block package.
  *
- * @copyright 2012 brainbits GmbH (http://www.brainbits.net)
- * @license   http://www.makeweb.de/LICENCE     Dummy Licence
+ * @copyright 2012_2013 brainbits GmbH (http://www.brainbits.net)
+ * @license   http://www.brainbits.net/LICENCE     Dummy Licence
  */
 
 namespace Brainbits\Blocking\Identifier;
@@ -13,7 +13,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 /**
  * Identifier test
  *
- * @author  Stephan Wentz <sw@brainbits.net>
+ * @author Stephan Wentz <sw@brainbits.net>
  */
 class IdentifierTest extends TestCase
 {
