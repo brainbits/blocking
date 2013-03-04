@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the brainbits block package.
+ * This file is part of the brainbits blocking package.
  *
  * @copyright 2012-2013 brainbits GmbH (http://www.brainbits.net)
  * @license   http://www.brainbits.net/LICENCE     Dummy Licence
@@ -12,6 +12,7 @@ use PHPUnit_Framework_TestCase as TestCase;
 use org\bovigo\vfs\vfsStream;
 use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Identifier\Identifier;
+use org\bovigo\vfs\vfsStreamDirectory;
 
 /**
  * Filesystem adapter test
@@ -61,6 +62,36 @@ class FilesystemAdapterTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertTrue(file_exists(vfsStream::url('blockDir/' . $identifier)));
+    }
+
+    /**
+     * @expectedException Brainbits\Blocking\Exception\DirectoryNotWritableException
+     */
+    public function testWriteFailsOnNonExistantDirectoryInNonWritableDirectory()
+    {
+        vfsStream::setup('nonWritableDir', 0);
+        $adapter = new FilesystemAdapter(vfsStream::url('nonWritableDir/blockDir'));
+
+        $identifier = new Identifier('test', 'lock');
+        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+
+        $adapter->write($block);
+    }
+
+    /**
+     * @expectedException Brainbits\Blocking\Exception\FileNotWritableException
+     */
+    public function testWriteFailsOnNonWritableDirectory()
+    {
+        vfsStream::setup('writableDir');
+        mkdir(vfsStream::url('writableDir/nonWritableBlockDir'), 0);
+
+        $adapter = new FilesystemAdapter(vfsStream::url('writableDir/nonWritableBlockDir'));
+
+        $identifier = new Identifier('test', 'lock');
+        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+
+        $adapter->write($block);
     }
 
     public function testTouchSucceedesOnExistingFile()

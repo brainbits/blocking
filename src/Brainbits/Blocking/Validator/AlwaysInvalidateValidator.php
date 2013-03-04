@@ -11,19 +11,18 @@ namespace Brainbits\Blocking\Validator;
 use Brainbits\Blocking\BlockInterface;
 
 /**
- * Block validator interface
- * Tests if a block is valid
+ * Always invalidate validator
+ * This validator always invalidates an existing block
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-interface ValidatorInterface
+class AlwaysInvalidateValidator implements ValidatorInterface
 {
     /**
-     * Validate block
-     * Return true if an existing block is valid, false if invalid
-     *
-     * @param BlockInterface $block
-     * @return boolean
+     * @inheritDoc
      */
-    public function validate(BlockInterface $block);
+    public function validate(BlockInterface $block)
+    {
+        return false;
+    }
 }

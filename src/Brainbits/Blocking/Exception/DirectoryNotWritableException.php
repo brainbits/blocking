@@ -6,18 +6,13 @@
  * @license   http://www.brainbits.net/LICENCE     Dummy Licence
  */
 
-namespace Brainbits\Blocking\Owner;
+namespace Brainbits\Blocking\Exception;
 
 /**
- * Block owner interface
+ * Directory not writable exception
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-interface OwnerInterface
+class DirectoryNotWritableException extends Exception
 {
-    /**
-     * Return string representation
-     * @return string
-     */
-    public function __toString();
 }

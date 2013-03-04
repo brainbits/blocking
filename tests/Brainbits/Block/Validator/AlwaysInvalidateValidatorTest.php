@@ -12,11 +12,11 @@ use Brainbits\Blocking\BlockInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * Expired validator test
+ * Always invalidate validator test
  *
  * @author Stephan Wentz <sw@brainbits.net>
  */
-class ExpiredValidatorTest extends TestCase
+class AlwaysInvalidateValidatorTest extends TestCase
 {
     public function testValidateBlockLastUpdatedThirtySecondsAgo()
     {
@@ -28,14 +28,14 @@ class ExpiredValidatorTest extends TestCase
             ->method('getUpdatedAt')
             ->will($this->returnValue(new \DateTime('30 seconds ago')));
 
-        $validator = new ExpiredValidator(20);
+        $validator = new AlwaysInvalidateValidator(20);
         $this->assertFalse($validator->validate($blockMock));
 
-        $validator = new ExpiredValidator(30);
+        $validator = new AlwaysInvalidateValidator(30);
         $this->assertFalse($validator->validate($blockMock));
 
-        $validator = new ExpiredValidator(60);
-        $this->assertTrue($validator->validate($blockMock));
+        $validator = new AlwaysInvalidateValidator(60);
+        $this->assertFalse($validator->validate($blockMock));
     }
 
     public function testValidateBlockLastUpdatedOneMinuteAgo()
@@ -48,14 +48,14 @@ class ExpiredValidatorTest extends TestCase
             ->method('getUpdatedAt')
             ->will($this->returnValue(new \DateTime('1 minute ago')));
 
-        $validator = new ExpiredValidator(30);
+        $validator = new AlwaysInvalidateValidator(30);
         $this->assertFalse($validator->validate($blockMock));
 
-        $validator = new ExpiredValidator(60);
+        $validator = new AlwaysInvalidateValidator(60);
         $this->assertFalse($validator->validate($blockMock));
 
-        $validator = new ExpiredValidator(90);
-        $this->assertTrue($validator->validate($blockMock));
+        $validator = new AlwaysInvalidateValidator(90);
+        $this->assertFalse($validator->validate($blockMock));
     }
 
     public function testValidateBlockLastUpdatedOneHourAo()
@@ -68,13 +68,13 @@ class ExpiredValidatorTest extends TestCase
             ->method('getUpdatedAt')
             ->will($this->returnValue(new \DateTime('1 hour ago')));
 
-        $validator = new ExpiredValidator(1800);
+        $validator = new AlwaysInvalidateValidator(1800);
         $this->assertFalse($validator->validate($blockMock));
 
-        $validator = new ExpiredValidator(3600);
+        $validator = new AlwaysInvalidateValidator(3600);
         $this->assertFalse($validator->validate($blockMock));
 
-        $validator = new ExpiredValidator(5400);
-        $this->assertTrue($validator->validate($blockMock));
+        $validator = new AlwaysInvalidateValidator(5400);
+        $this->assertFalse($validator->validate($blockMock));
     }
 }

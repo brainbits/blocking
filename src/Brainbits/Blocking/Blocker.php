@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the brainbits block package.
+ * This file is part of the brainbits blocking package.
  *
  * @copyright 2012-2013 brainbits GmbH (http://www.brainbits.net)
  * @license   http://www.brainbits.net/LICENCE     Dummy Licence
@@ -9,9 +9,10 @@
 namespace Brainbits\Blocking;
 
 use Brainbits\Blocking\Adapter\AdapterInterface;
-use Brainbits\Blocking\Validator\ValidatorInterface;
+use Brainbits\Blocking\Exception\BlockingException;
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
+use Brainbits\Blocking\Validator\ValidatorInterface;
 
 /**
  * Blocker
@@ -52,13 +53,14 @@ class Blocker
      *
      * @param IdentifierInterface $identifier
      * @return BlockInterface
+     * @throws BlockingException
      */
     public function block(IdentifierInterface $identifier)
     {
         if ($this->isBlocked($identifier)) {
             $block = $this->getBlock($identifier);
             if ((string)$block->getOwner() !== (string)$this->owner) {
-                throw new \Exception('Already blocked');
+                throw new BlockingException('Already blocked');
             }
             $this->adapter->touch($block);
             return $block;

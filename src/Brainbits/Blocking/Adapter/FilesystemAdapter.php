@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of the brainbits block package.
+ * This file is part of the brainbits blocking package.
  *
  * @copyright 2012-2013 brainbits GmbH (http://www.brainbits.net)
  * @license   http://www.brainbits.net/LICENCE     Dummy Licence
@@ -10,7 +10,8 @@ namespace Brainbits\Blocking\Adapter;
 
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 use Brainbits\Blocking\BlockInterface;
-use Brainbits\Blocking\Block;
+use Brainbits\Blocking\Exception\DirectoryNotWritableException;
+use Brainbits\Blocking\Exception\FileNotWritableException;
 
 /**
  * Filesystem block adapter
@@ -110,22 +111,36 @@ class FilesystemAdapter implements AdapterInterface
      */
     protected function getFilename(IdentifierInterface $identifier)
     {
-        return $this->ensureDirectoryExists($this->root) . '/' . $identifier;
+        return $this->ensureFileIsWritable($this->ensureDirectoryExists($this->root) . '/' . $identifier);
+    }
+
+    /**
+     * Ensure file is writable
+     *
+     * @param string $file
+     * @return string
+     * @throws FileNotWritableException
+     */
+    protected function ensureFileIsWritable($file)
+    {
+        if (!is_writable(dirname($file))) {
+            throw new FileNotWritableException('File ' . $file . ' not writable.');
+        }
+
+        return $file;
     }
 
     /**
      * Ensure directory exists
      *
-     * @param string $filename
+     * @param string $dirname
      * @return string
-     * @throws \Exception
+     * @throws DirectoryNotWritableException
      */
     protected function ensureDirectoryExists($dirname)
     {
-        if (!file_exists($dirname)) {
-            if (!mkdir($dirname, 0777, true)) {
-                throw new \Exception('Can\'t create block dir ' . $dirname);
-            }
+        if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
+            throw new DirectoryNotWritableException('Can\'t create block dir ' . $dirname . '.');
         }
 
         return $dirname;
