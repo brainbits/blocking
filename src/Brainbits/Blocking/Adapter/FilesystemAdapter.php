@@ -2,8 +2,10 @@
 /**
  * This file is part of the brainbits blocking package.
  *
- * @copyright 2012-2013 brainbits GmbH (http://www.brainbits.net)
- * @license   http://www.brainbits.net/LICENCE     Dummy Licence
+ * (c) 2012-2013 brainbits GmbH (http://www.brainbits.net)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace Brainbits\Blocking\Adapter;

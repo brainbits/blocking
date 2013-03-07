@@ -2,26 +2,24 @@ Blocking Component
 ==================
 The Locking Component provides methods to manager content based blocking.
 
-```php
-<?php
+    <?php
 
-use Brainbits\Blocking\Blocker;
-use Brainbits\Blocking\Adapter\FilesystemAdapter;
-use Brainbits\Blocking\Owner\SessionOwner;
+    use Brainbits\Blocking\Blocker;
+    use Brainbits\Blocking\Adapter\FilesystemAdapter;
+    use Brainbits\Blocking\Owner\SessionOwner;
 
-$adapter   = new FilesystemAdapter('/where/to/store/blocks' /* path to directory on filesystem */);
-$owner     = new SessionOwner($session /* symfony session */);
-$validator = new ExpiredValidator(300 /* block will expire after 300 seconds */);
+    $adapter   = new FilesystemAdapter('/where/to/store/blocks' /* path to directory on filesystem */);
+    $owner     = new SessionOwner($session /* symfony session */);
+    $validator = new ExpiredValidator(300 /* block will expire after 300 seconds */);
 
-$blocker = new Blocker($adapter, $owner, $validator);
+    $blocker = new Blocker($adapter, $owner, $validator);
 
-$identifier = new Identifer('myContent', 123);
+    $identifier = new Identifer('myContent', 123);
 
-$block = $blocker->block($identifier);
-$result = $blocker->unblock($identifier);
-$result = $blocker->isBlocked($identifier);
-$block = $blocker->getBlock($identifier);
-```
+    $block = $blocker->block($identifier);
+    $result = $blocker->unblock($identifier);
+    $result = $blocker->isBlocked($identifier);
+    $block = $blocker->getBlock($identifier);
 
 Blocking Adapters
 -----------------
