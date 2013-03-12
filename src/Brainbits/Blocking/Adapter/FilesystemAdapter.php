@@ -68,8 +68,7 @@ class FilesystemAdapter implements AdapterInterface
      */
     public function remove(BlockInterface $block)
     {
-        if (!$this->exists($block->getIdentifier()))
-        {
+        if (!$this->exists($block->getIdentifier())) {
             return false;
         }
 
