@@ -1,4 +1,4 @@
-Blocking Component
+Blocking Component [![Build Status](https://travis-ci.org/brainbits/blocking.png?branch=master)](https://travis-ci.org/brainbits/blocking)
 ==================
 The Locking Component provides methods to manager content based blocking.
 
