@@ -41,10 +41,11 @@ class FilesystemAdapter implements AdapterInterface
      */
     public function write(BlockInterface $block)
     {
-        file_put_contents(
-            $this->getFilename($block->getIdentifier()),
-            serialize($block)
-        );
+        $filename = $this->getFilename($block->getIdentifier());
+
+        if (false === file_put_contents($filename, serialize($block))) {
+            throw new \Exception('Write failed');
+        }
 
         return true;
     }
@@ -55,7 +56,11 @@ class FilesystemAdapter implements AdapterInterface
     public function touch(BlockInterface $block)
     {
         $filename = $this->getFilename($block->getIdentifier());
-        touch($filename);
+
+        if (false === touch($filename)) {
+            throw new \Exception('Touch failed');
+        }
+
         $updatedAt = new \DateTime();
         $updatedAt->setTimestamp(filemtime($filename));
         $block->setUpdatedAt($updatedAt);
@@ -72,7 +77,10 @@ class FilesystemAdapter implements AdapterInterface
             return false;
         }
 
-        unlink($this->getFilename($block->getIdentifier()));
+        $filename = $this->getFilename($block->getIdentifier());
+        if (false === unlink($filename)) {
+            throw new \Exception('Unlink failed');
+        }
 
         return true;
     }
@@ -82,7 +90,8 @@ class FilesystemAdapter implements AdapterInterface
      */
     public function exists(IdentifierInterface $identifier)
     {
-        return file_exists($this->getFilename($identifier));
+        $filename = $this->getFilename($identifier);
+        return file_exists($filename);
     }
 
     /**
