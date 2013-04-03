@@ -96,6 +96,10 @@ class FilesystemAdapterTest extends TestCase
         $adapter->write($block);
     }
 
+    /**
+     * @requires PHP 5.4
+     * in PHP 5.3 and before, vfsstream had no support for touch
+     */
     public function testTouchSucceedesOnExistingFile()
     {
         $identifier = new Identifier('test', 'lock');
