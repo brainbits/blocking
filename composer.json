@@ -15,7 +15,7 @@
         "symfony/http-foundation": "2.3.*"
     },
     "require-dev": {
-        "mikey179/vfsStream": "1.1.*"
+        "mikey179/vfsStream": "1.2.*"
     },
     "autoload": {
         "psr-0": { "Brainbits": "src/" }
