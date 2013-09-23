@@ -1,6 +1,6 @@
 Blocking Component [![Build Status](https://travis-ci.org/brainbits/blocking.png?branch=master)](https://travis-ci.org/brainbits/blocking)
 ==================
-The Blocking Component provides methods to manager content based blocking.
+The Blocking Component provides methods to manage content based blocking.
 
     <?php
 
