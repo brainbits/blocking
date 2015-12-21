@@ -24,61 +24,46 @@ class AlwaysInvalidateValidatorTest extends TestCase
 {
     public function testValidateBlockLastUpdatedThirtySecondsAgo()
     {
-        $blockMock = $this->getMockBuilder('Brainbits\Blocking\BlockInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $blockMock->expects($this->any())
-            ->method('getUpdatedAt')
-            ->will($this->returnValue(new \DateTime('30 seconds ago')));
+        $blockMock = $this->prophesize(BlockInterface::class);
+        $blockMock->getUpdatedAt()->willReturn(new \DateTime('30 seconds ago'));
 
         $validator = new AlwaysInvalidateValidator(20);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
 
         $validator = new AlwaysInvalidateValidator(30);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
 
         $validator = new AlwaysInvalidateValidator(60);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
     }
 
     public function testValidateBlockLastUpdatedOneMinuteAgo()
     {
-        $blockMock = $this->getMockBuilder('Brainbits\Blocking\BlockInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $blockMock->expects($this->any())
-            ->method('getUpdatedAt')
-            ->will($this->returnValue(new \DateTime('1 minute ago')));
+        $blockMock = $this->prophesize(BlockInterface::class);
+        $blockMock->getUpdatedAt()->willReturn(new \DateTime('1 minute ago'));
 
         $validator = new AlwaysInvalidateValidator(30);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
 
         $validator = new AlwaysInvalidateValidator(60);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
 
         $validator = new AlwaysInvalidateValidator(90);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
     }
 
     public function testValidateBlockLastUpdatedOneHourAo()
     {
-        $blockMock = $this->getMockBuilder('Brainbits\Blocking\BlockInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $blockMock->expects($this->any())
-            ->method('getUpdatedAt')
-            ->will($this->returnValue(new \DateTime('1 hour ago')));
+        $blockMock = $this->prophesize(BlockInterface::class);
+        $blockMock->getUpdatedAt()->willReturn(new \DateTime('1 hour ago'));
 
         $validator = new AlwaysInvalidateValidator(1800);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
 
         $validator = new AlwaysInvalidateValidator(3600);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
 
         $validator = new AlwaysInvalidateValidator(5400);
-        $this->assertFalse($validator->validate($blockMock));
+        $this->assertFalse($validator->validate($blockMock->reveal()));
     }
 }

@@ -13,6 +13,7 @@ namespace Brainbits\Blocking\Tests\Owner;
 
 use Brainbits\Blocking\Owner\SessionOwner;
 use PHPUnit_Framework_TestCase as TestCase;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * Session owner test
@@ -23,16 +24,10 @@ class SessionOwnerTest extends TestCase
 {
     public function testToString()
     {
-        $sessionMock = $this->getMockBuilder('Symfony\Component\HttpFoundation\Session\SessionInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $sessionMock = $this->prophesize(SessionInterface::class);
+        $sessionMock->getId()->willReturn('abcdef');
 
-        $sessionMock
-            ->expects($this->once())
-            ->method('getId')
-            ->will($this->returnValue('abcdef'));
-
-        $owner = new SessionOwner($sessionMock);
+        $owner = new SessionOwner($sessionMock->reveal());
 
         $this->assertEquals('abcdef', (string)$owner);
     }

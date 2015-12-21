@@ -12,10 +12,12 @@
 namespace Brainbits\Blocking\Tests\Adapter;
 
 use Brainbits\Blocking\Adapter\FilesystemAdapter;
+use Brainbits\Blocking\Owner\OwnerInterface;
 use PHPUnit_Framework_TestCase as TestCase;
 use org\bovigo\vfs\vfsStream;
 use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Identifier\Identifier;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Filesystem adapter test
@@ -34,19 +36,20 @@ class FilesystemAdapterTest extends TestCase
      */
     private $root;
 
+    /**
+     * @var OwnerInterface|ObjectProphecy
+     */
+    private $ownerMock;
+
     public function setUp()
     {
         vfsStream::setup('blockDir');
 
         $this->root = vfsStream::url('blockDir');
         $this->adapter = new FilesystemAdapter($this->root);
-        $this->ownerMock = $this->getMockBuilder('Brainbits\Blocking\Owner\OwnerInterface')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->ownerMock
-            ->expects($this->any())
-            ->method('__toString')
-            ->will($this->returnValue('dummyOwner'));
+
+        $this->ownerMock = $this->prophesize(OwnerInterface::class);
+        $this->ownerMock->__toString()->willReturn('dummyOwner');
     }
 
     public function tearDown()
@@ -59,7 +62,7 @@ class FilesystemAdapterTest extends TestCase
     public function testWriteSucceedesOnNewFile()
     {
         $identifier = new Identifier('test', 'lock');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $result = $this->adapter->write($block);
 
@@ -76,7 +79,7 @@ class FilesystemAdapterTest extends TestCase
         $adapter = new FilesystemAdapter(vfsStream::url('nonWritableDir/blockDir'));
 
         $identifier = new Identifier('test', 'lock');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $adapter->write($block);
     }
@@ -92,7 +95,7 @@ class FilesystemAdapterTest extends TestCase
         $adapter = new FilesystemAdapter(vfsStream::url('writableDir/nonWritableBlockDir'));
 
         $identifier = new Identifier('test', 'lock');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $adapter->write($block);
     }
@@ -104,7 +107,7 @@ class FilesystemAdapterTest extends TestCase
     public function testTouchSucceedesOnExistingFile()
     {
         $identifier = new Identifier('test', 'lock');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $this->adapter->write($block);
         $result = $this->adapter->touch($block);
@@ -116,7 +119,7 @@ class FilesystemAdapterTest extends TestCase
     public function testRemoveReturnsFalseOnNonexistingFile()
     {
         $identifier = new Identifier('test', 'unlock');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $result = $this->adapter->remove($block);
 
@@ -127,7 +130,7 @@ class FilesystemAdapterTest extends TestCase
     public function testUnblockReturnsTrueOnExistingFile()
     {
         $identifier = new Identifier('test', 'unlock');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $this->adapter->write($block);
         $result = $this->adapter->remove($block);
@@ -148,7 +151,7 @@ class FilesystemAdapterTest extends TestCase
     public function testIsBlockedReturnsTrueOnExistingBlock()
     {
         $identifier = new Identifier('test', 'isblocked');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $this->adapter->write($block);
         $result = $this->adapter->exists($identifier);
@@ -168,7 +171,7 @@ class FilesystemAdapterTest extends TestCase
     public function testGetReturnsBlockOnExistingFile()
     {
         $identifier = new Identifier('test', 'isblocked');
-        $block = new Block($identifier, $this->ownerMock, new \DateTime());
+        $block = new Block($identifier, $this->ownerMock->reveal(), new \DateTime());
 
         $this->adapter->write($block);
         $result = $this->adapter->get($identifier);
