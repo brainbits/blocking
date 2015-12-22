@@ -1,5 +1,14 @@
-Blocking Component [![Build Status](https://travis-ci.org/brainbits/blocking.png?branch=master)](https://travis-ci.org/brainbits/blocking) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382/mini.png)](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382)
+Blocking Component
 ==================
+
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382/mini.png)](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382)
+[![Build Status](https://travis-ci.org/brainbits/blocking.svg?branch=master)](https://travis-ci.org/brainbits/blocking)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/brainbits/blocking/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/brainbits/blocking/?branch=master)
+[![Scrutinizer Code Coverage](https://scrutinizer-ci.com/g/brainbits/blocking/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/brainbits/blocking/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/brainbits/blocking/v/stable.svg)](https://packagist.org/packages/brainbits/blocking)
+[![Total Downloads](https://poser.pugx.org/brainbits/blocking/downloads.svg)](https://packagist.org/packages/brainbits/blocking)
+[![Dependency Status](https://www.versioneye.com/php/brainbits:blocking/master/badge.svg)](https://www.versioneye.com/php/brainbits:blocking/master)
+
 The Blocking Component provides methods to manage content based blocking.
 
     <?php
