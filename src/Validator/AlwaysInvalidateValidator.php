@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -14,17 +16,12 @@ namespace Brainbits\Blocking\Validator;
 use Brainbits\Blocking\BlockInterface;
 
 /**
- * Always invalidate validator
- * This validator always invalidates an existing block
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Always invalidate validator.
+ * This validator always invalidates an existing block.
  */
 class AlwaysInvalidateValidator implements ValidatorInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function validate(BlockInterface $block)
+    public function validate(BlockInterface $block): bool
     {
         return false;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -14,19 +16,14 @@ namespace Brainbits\Blocking\Validator;
 use Brainbits\Blocking\BlockInterface;
 
 /**
- * Block validator interface
- * Tests if a block is valid
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Block validator interface.
+ * Tests if a block is valid.
  */
 interface ValidatorInterface
 {
     /**
-     * Validate block
-     * Return true if an existing block is valid, false if invalid
-     *
-     * @param BlockInterface $block
-     * @return boolean
+     * Validate block.
+     * Return true if an existing block is valid, false if invalid.
      */
-    public function validate(BlockInterface $block);
+    public function validate(BlockInterface $block): bool;
 }

@@ -13,7 +13,8 @@ namespace Brainbits\Blocking\Tests\Validator;
 
 use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Validator\ExpiredValidator;
-use PHPUnit_Framework_TestCase as TestCase;
+use DateTimeImmutable;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Expired validator test
@@ -24,23 +25,24 @@ class ExpiredValidatorTest extends TestCase
 {
     public function testValidateBlockLastUpdatedThirtySecondsAgo()
     {
-        $blockMock = $this->prophesize(BlockInterface::class);
-        $blockMock->getUpdatedAt()->willReturn(new \DateTime('30 seconds ago'));
+        $block = $this->prophesize(BlockInterface::class);
+        $block->getUpdatedAt()
+            ->willReturn(new DateTimeImmutable('30 seconds ago'));
 
         $validator = new ExpiredValidator(20);
-        $this->assertFalse($validator->validate($blockMock->reveal()));
+        $this->assertFalse($validator->validate($block->reveal()));
 
         $validator = new ExpiredValidator(30);
-        $this->assertFalse($validator->validate($blockMock->reveal()));
+        $this->assertFalse($validator->validate($block->reveal()));
 
         $validator = new ExpiredValidator(60);
-        $this->assertTrue($validator->validate($blockMock->reveal()));
+        $this->assertTrue($validator->validate($block->reveal()));
     }
 
     public function testValidateBlockLastUpdatedOneMinuteAgo()
     {
         $blockMock = $this->prophesize(BlockInterface::class);
-        $blockMock->getUpdatedAt()->willReturn(new \DateTime('1 minute ago'));
+        $blockMock->getUpdatedAt()->willReturn(new DateTimeImmutable('1 minute ago'));
 
         $validator = new ExpiredValidator(30);
         $this->assertFalse($validator->validate($blockMock->reveal()));
@@ -55,7 +57,7 @@ class ExpiredValidatorTest extends TestCase
     public function testValidateBlockLastUpdatedOneHourAo()
     {
         $blockMock = $this->prophesize(BlockInterface::class);
-        $blockMock->getUpdatedAt()->willReturn(new \DateTime('1 hour ago'));
+        $blockMock->getUpdatedAt()->willReturn(new DateTimeImmutable('1 hour ago'));
 
         $validator = new ExpiredValidator(1800);
         $this->assertFalse($validator->validate($blockMock->reveal()));

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -13,81 +15,60 @@ namespace Brainbits\Blocking;
 
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
+use DateTimeImmutable;
 
 /**
- * Default block
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Standard block.
  */
 class Block implements BlockInterface
 {
-    /**
-     * @var IdentifierInterface
-     */
-    protected $identifier;
+    private $identifier;
+    private $owner;
+    private $createdAt;
+    private $updatedAt;
 
-    /**
-     * @var \DateTime
-     */
-    protected $createdAt;
-
-    /**
-     * @var \DateTime
-     */
-    protected $updatedAt;
-
-    /**
-     * @param IdentifierInterface $identifier
-     * @param OwnerInterface      $owner
-     * @param \DateTime           $createdAt
-     */
-    public function __construct(IdentifierInterface $identifier, OwnerInterface $owner, \DateTime $createdAt)
+    public function __construct(IdentifierInterface $identifier, OwnerInterface $owner, DateTimeImmutable $createdAt)
     {
         $this->identifier = $identifier;
-        $this->owner      = $owner;
-        $this->createdAt  = $createdAt;
-        $this->updatedAt  = $createdAt;
+        $this->owner = $owner;
+        $this->createdAt = $createdAt;
+        $this->updatedAt = $createdAt;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getIdentifier()
+    public function getIdentifier(): IdentifierInterface
     {
         return $this->identifier;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getOwner()
+    public function getOwner(): OwnerInterface
     {
         return $this->owner;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getCreatedAt()
+    public function isOwnedBy(OwnerInterface $owner): bool
+    {
+        return $this->owner->equals($owner);
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function setUpdatedAt(\DateTime $updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): void
+    {
+        trigger_error('Use touch() insted of setUpdatedAt()', E_USER_DEPRECATED);
+
+        $this->touch($updatedAt);
+    }
+
+    public function touch(DateTimeImmutable $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
     }
 }

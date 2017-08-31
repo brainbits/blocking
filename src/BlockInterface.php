@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -13,47 +15,27 @@ namespace Brainbits\Blocking;
 
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
+use DateTimeImmutable;
 
 /**
- * Block interface
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Block interface.
  */
 interface BlockInterface
 {
-    /**
-     * Return identifier
-     *
-     * @return IdentifierInterface
-     */
-    public function getIdentifier();
+    public function getIdentifier(): IdentifierInterface;
+
+    public function getOwner(): OwnerInterface;
+
+    public function isOwnedBy(OwnerInterface $owner): bool;
+
+    public function getCreatedAt(): DateTimeImmutable;
+
+    public function getUpdatedAt(): DateTimeImmutable;
 
     /**
-     * Return owner
-     *
-     * @return OwnerInterface
+     * @deprecated Use touch()
      */
-    public function getOwner();
+    public function setUpdatedAt(DateTimeImmutable $updatedAt): void;
 
-    /**
-     * Set created at
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt();
-
-    /**
-     * Set updated at
-     *
-     * @param \DateTime $updatedAt
-     * @returns BlockInterface
-     */
-    public function setUpdatedAt(\DateTime $updatedAt);
-
-    /**
-     * Return modified at
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt();
+    public function touch(DateTimeImmutable $updatedAt): void;
 }

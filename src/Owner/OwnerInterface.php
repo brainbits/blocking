@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,15 +14,11 @@
 namespace Brainbits\Blocking\Owner;
 
 /**
- * Block owner interface
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Block owner interface.
  */
 interface OwnerInterface
 {
-    /**
-     * Return string representation
-     * @return string
-     */
-    public function __toString();
+    public function equals(OwnerInterface $owner): bool;
+
+    public function __toString(): string;
 }

@@ -15,7 +15,10 @@ use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use DateTime;
-use PHPUnit_Framework_TestCase as TestCase;
+use DateTimeImmutable;
+use DateTimeInterface;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Block test
@@ -25,76 +28,104 @@ use PHPUnit_Framework_TestCase as TestCase;
 class BlockTest extends TestCase
 {
     /**
-     * @var IdentifierInterface
+     * @var IdentifierInterface|ObjectProphecy
      */
-    private $identifierMock;
+    private $identifier;
 
     /**
-     * @var OwnerInterface
+     * @var OwnerInterface|ObjectProphecy
      */
-    private $ownerMock;
+    private $owner;
 
     public function setUp()
     {
-        $this->identifierMock = $this->prophesize(IdentifierInterface::class)->reveal();
+        $this->identifier = $this->prophesize(IdentifierInterface::class)->reveal();
 
-        $ownerMock = $this->prophesize(OwnerInterface::class);
-        $ownerMock->__toString()->willReturn('dummyOwner');
-        $this->ownerMock = $ownerMock->reveal();
+        $this->owner = $this->prophesize(OwnerInterface::class);
+        $this->owner->__toString()
+            ->willReturn('dummyOwner');
     }
 
     public function testConstruct()
     {
-        $block = new Block($this->identifierMock, $this->ownerMock, new DateTime());
+        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+
+        $this->assertInstanceOf(Block::class, $block);
     }
 
     public function testGetIdentifierReturnsCorrectValue()
     {
-        $block = new Block($this->identifierMock, $this->ownerMock, new DateTime());
+        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
 
-        $this->assertSame($this->identifierMock, $block->getIdentifier());
+        $this->assertSame($this->identifier, $block->getIdentifier());
     }
 
     public function testGetOwnerReturnsCorrectValue()
     {
-        $block = new Block($this->identifierMock, $this->ownerMock, new DateTime());
+        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
 
-        $this->assertSame($this->ownerMock, $block->getOwner());
+        $this->assertSame($this->owner->reveal(), $block->getOwner());
+    }
+
+    public function testIsOwnedByReturnsTrue()
+    {
+        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+
+        $this->owner->equals($this->owner->reveal())
+            ->willReturn(true);
+
+        $this->assertTrue($block->isOwnedBy($this->owner->reveal()));
+    }
+
+    public function testIsOwnedByReturnsFalse()
+    {
+        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+
+        $owner = $this->prophesize(OwnerInterface::class);
+        $owner->__toString()
+            ->willReturn('dummyOwner');
+
+        $this->owner->equals($owner->reveal())
+           ->willReturn(false);
+
+        $this->assertFalse($block->isOwnedBy($owner->reveal()));
     }
 
     public function testGetCreatedAtReturnsCorrectValue()
     {
-        $createdAt = new DateTime();
+        $createdAt = new DateTimeImmutable();
 
-        $block = new Block($this->identifierMock, $this->ownerMock, $createdAt);
+        $block = new Block($this->identifier, $this->owner->reveal(), $createdAt);
         $result = $block->getCreatedAt();
 
-        $this->assertInstanceOf('\DateTime', $result);
+        $this->assertInstanceOf(DateTimeImmutable::class, $result);
         $this->assertSame($createdAt, $result);
     }
 
     public function testGetUpdatedAtReturnsCreatedAtValueAfterInstanciation()
     {
-        $createdAt = new DateTime();
+        $createdAt = new DateTimeImmutable();
 
-        $block = new Block($this->identifierMock, $this->ownerMock, $createdAt);
+        $block = new Block($this->identifier, $this->owner->reveal(), $createdAt);
         $result = $block->getUpdatedAt();
 
-        $this->assertInstanceOf('\DateTime', $result);
+        $this->assertInstanceOf(DateTimeImmutable::class, $result);
         $this->assertSame($createdAt, $result);
     }
 
-    public function testSetUpdatedAtUpdatesValue()
+    public function testTouchUpdatesValue()
     {
-        $createdAt = new DateTime();
+        $createdAt = new DateTimeImmutable();
 
-        $block = new Block($this->identifierMock, $this->ownerMock, $createdAt);
+        $block = new Block($this->identifier, $this->owner->reveal(), $createdAt);
 
-        $updatedAt = new DateTime();
-        $block->setUpdatedAt($updatedAt);
+        $updatedAt = new DateTimeImmutable();
+
+        $block->touch($updatedAt);
         $result = $block->getUpdatedAt();
 
-        $this->assertInstanceOf('\DateTime', $result);
+        $this->assertInstanceOf(DateTimeImmutable::class, $result);
+        $this->assertNotSame($createdAt, $result);
         $this->assertSame($updatedAt, $result);
     }
 }

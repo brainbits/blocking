@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,10 +14,12 @@
 namespace Brainbits\Blocking\Exception;
 
 /**
- * Directory not writable exception
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Directory not writable exception.
  */
 class DirectoryNotWritableException extends RuntimeException
 {
+    public static function create(string $dirname): self
+    {
+        return new self("Directory $dirname not writable.");
+    }
 }

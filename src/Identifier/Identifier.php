@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,30 +14,23 @@
 namespace Brainbits\Blocking\Identifier;
 
 /**
- * Default identifier
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Standard identifier.
  */
 class Identifier implements IdentifierInterface
 {
-    /**
-     * @var string
-     */
-    protected $identifier;
+    private $identifier;
 
-    /**
-     * @param string $type
-     * @param string $id
-     */
-    public function __construct($type, $id)
+    public function __construct(string $identifier)
     {
-        $this->identifier = $type . '__' . $id;
+        $this->identifier = $identifier;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function equals(IdentifierInterface $identifier): bool
+    {
+        return (string) $identifier === (string) $this->identifier;
+    }
+
+    public function __toString(): string
     {
         return $this->identifier;
     }
