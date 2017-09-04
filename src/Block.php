@@ -60,13 +60,6 @@ class Block implements BlockInterface
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): void
-    {
-        trigger_error('Use touch() insted of setUpdatedAt()', E_USER_DEPRECATED);
-
-        $this->touch($updatedAt);
-    }
-
     public function touch(DateTimeImmutable $updatedAt): void
     {
         $this->updatedAt = $updatedAt;

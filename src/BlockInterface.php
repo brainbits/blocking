@@ -32,10 +32,5 @@ interface BlockInterface
 
     public function getUpdatedAt(): DateTimeImmutable;
 
-    /**
-     * @deprecated Use touch()
-     */
-    public function setUpdatedAt(DateTimeImmutable $updatedAt): void;
-
     public function touch(DateTimeImmutable $updatedAt): void;
 }
