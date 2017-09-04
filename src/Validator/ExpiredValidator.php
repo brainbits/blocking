@@ -27,7 +27,7 @@ class ExpiredValidator implements ValidatorInterface
 
     public function __construct(int $expireSeconds)
     {
-        $this->expireSeconds = (int) $expireSeconds;
+        $this->expireSeconds = $expireSeconds;
     }
 
     public function validate(BlockInterface $block): bool
