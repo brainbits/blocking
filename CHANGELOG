@@ -1,0 +1,6 @@
+3.0
+
+- Blocker::isBlocked() now returns boolean. Use Blocker::getBlock() to retrieve Block.
+- Block::setUpdatedAt() removed. Use Block::touch().
+- Block uses DateTimeImmutable.
+- Identifier::__construct() only takes one string Argument.

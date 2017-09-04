@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,10 +14,12 @@
 namespace Brainbits\Blocking\Exception;
 
 /**
- * File not writable exception
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * File not writable exception.
  */
 class FileNotWritableException extends RuntimeException
 {
+    public static function create(string $filename): self
+    {
+        return new self("File $filename not writable.");
+    }
 }

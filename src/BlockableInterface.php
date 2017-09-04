@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -14,9 +16,7 @@ namespace Brainbits\Blocking;
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 
 /**
- * Blockable interface
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Blockable interface.
  */
 interface BlockableInterface
 {

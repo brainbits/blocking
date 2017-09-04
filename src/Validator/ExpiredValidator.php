@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,66 +14,58 @@
 namespace Brainbits\Blocking\Validator;
 
 use Brainbits\Blocking\BlockInterface;
+use DateInterval;
+use DateTimeImmutable;
 
 /**
- * Expired validator
- * Checks if a block is expired
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Expired validator.
+ * Checks if a block is expired.
  */
 class ExpiredValidator implements ValidatorInterface
 {
-    /**
-     * @var integer
-     */
-    protected $expire;
+    private $expireSeconds;
 
-    /**
-     * @param integer $expire
-     */
-    public function __construct($expire)
+    public function __construct(int $expireSeconds)
     {
-        $this->expire = (integer)$expire;
+        $this->expireSeconds = $expireSeconds;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function validate(BlockInterface $block)
+    public function validate(BlockInterface $block): bool
     {
-        $now = new \DateTime();
+        $now = new DateTimeImmutable();
         $updatedAt = $block->getUpdatedAt();
 
         $interval = $updatedAt->diff($now);
         $diffInSeconds = $this->intervalToSeconds($interval);
 
-        return $this->expire > $diffInSeconds;
+        return $this->expireSeconds > $diffInSeconds;
     }
 
     /**
      * Calculate seconds from interval
      *
-     * @param \DateInterval $interval
-     * @return integer
+     * @param DateInterval $interval
+     *
+     * @return int
      */
-    private function intervalToSeconds(\DateInterval $interval)
+    private function intervalToSeconds(DateInterval $interval): int
     {
-        $seconds = $interval->format('%s');
+        $seconds = (int) $interval->format('%s');
 
         $multiplier = 60;
-        $seconds += $interval->format('%i') * $multiplier;
+        $seconds += (int) $interval->format('%i') * $multiplier;
 
         $multiplier *= 60;
-        $seconds += $interval->format('%h') * $multiplier;
+        $seconds += (int) $interval->format('%h') * $multiplier;
 
         $multiplier *= 24;
-        $seconds += $interval->format('%d') * $multiplier;
+        $seconds += (int) $interval->format('%d') * $multiplier;
 
         $multiplier *= 30;
-        $seconds += $interval->format('%m') * $multiplier;
+        $seconds += (int) $interval->format('%m') * $multiplier;
 
         $multiplier *= 12;
-        $seconds += $interval->format('%y') * $multiplier;
+        $seconds += (int) $interval->format('%y') * $multiplier;
 
         return $seconds;
     }

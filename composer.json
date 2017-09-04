@@ -11,18 +11,19 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": "^7.1"
     },
     "require-dev": {
-        "php": ">=5.5.0",
-        "mikey179/vfsStream": "~1.2",
-        "phpunit/phpunit": "~4.5",
-        "symfony/http-foundation": "~2.3"
+        "mikey179/vfsStream": "^1.2",
+        "phpunit/phpunit": "^6.0",
+        "symfony/http-foundation": "^2.8|^3.0"
     },
     "autoload": {
         "psr-4": { "Brainbits\\Blocking\\": "src/" }
     },
-    "autoload-dev": {
-        "psr-4": { "Brainbits\\Blocking\\Tests\\": "tests/" }
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0-dev"
+        }
     }
 }

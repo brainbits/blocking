@@ -13,7 +13,7 @@ namespace Brainbits\Blocking\Tests\Validator;
 
 use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Validator\AlwaysInvalidateValidator;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Always invalidate validator test

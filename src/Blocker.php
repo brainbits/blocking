@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -11,128 +13,98 @@
 
 namespace Brainbits\Blocking;
 
-use Brainbits\Blocking\Adapter\AdapterInterface;
+use Brainbits\Blocking\Storage\StorageInterface;
 use Brainbits\Blocking\Exception\BlockFailedException;
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use Brainbits\Blocking\Validator\ValidatorInterface;
+use DateTimeImmutable;
 
 /**
- * Blocker
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Blocker.
  */
 class Blocker
 {
-    /**
-     * @var AdapterInterface
-     */
-    protected $adapter;
+    private $storage;
+    private $owner;
+    private $validator;
 
-    /**
-     * @var OwnerInterface
-     */
-    protected $owner;
-
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validator;
-
-    /**
-     * @param AdapterInterface   $adapter
-     * @param OwnerInterface     $owner
-     * @param ValidatorInterface $validator
-     */
-    public function __construct(AdapterInterface $adapter, OwnerInterface $owner, ValidatorInterface $validator)
+    public function __construct(StorageInterface $adapter, OwnerInterface $owner, ValidatorInterface $validator)
     {
-        $this->adapter   = $adapter;
-        $this->owner     = $owner;
+        $this->storage = $adapter;
+        $this->owner = $owner;
         $this->validator = $validator;
     }
 
-    /**
-     * Set block
-     *
-     * @param IdentifierInterface $identifier
-     * @return BlockInterface
-     * @throws BlockFailedException
-     */
-    public function block(IdentifierInterface $identifier)
+    public function block(IdentifierInterface $identifier): BlockInterface
+    {
+        $block = $this->tryBlock($identifier);
+
+        if ($block === null) {
+            throw BlockFailedException::createAlreadyBlocked($identifier);
+        }
+
+        return $block;
+    }
+
+    public function tryBlock(IdentifierInterface $identifier): ?BlockInterface
     {
         if ($this->isBlocked($identifier)) {
             $block = $this->getBlock($identifier);
-            if ((string)$block->getOwner() !== (string)$this->owner) {
-                throw new BlockFailedException('Already blocked');
+            if (!$block->isOwnedBy($this->owner)) {
+                return null;
             }
-            $this->adapter->touch($block);
+            $this->storage->touch($block);
+
             return $block;
         }
 
-        $block = new Block($identifier, $this->owner, new \DateTime());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
-        $this->adapter->write($block);
+        $this->storage->write($block);
 
         return $block;
     }
 
 
-    /**
-     * Remove block
-     *
-     * @param IdentifierInterface $identifier
-     * @return boolean
-     */
-    public function unblock(IdentifierInterface $identifier)
+    public function unblock(IdentifierInterface $identifier): ?BlockInterface
     {
         $block = $this->getBlock($identifier);
         if (null === $block) {
-            return false;
+            return null;
         }
 
-        $this->adapter->remove($block);
+        $this->storage->remove($block);
 
-        return true;
+        return $block;
     }
 
-    /**
-     * Is a block set?
-     *
-     * @param IdentifierInterface $identifier
-     * @return boolean
-     */
-    public function isBlocked(IdentifierInterface $identifier)
+    public function isBlocked(IdentifierInterface $identifier): bool
     {
-        $exists = $this->adapter->exists($identifier);
+        $exists = $this->storage->exists($identifier);
 
         if (!$exists) {
             return false;
         }
 
-        $block = $this->adapter->get($identifier);
+        $block = $this->storage->get($identifier);
         $valid = $this->validator->validate($block);
 
         if ($valid) {
             return true;
         }
 
-        $this->adapter->remove($block);
+        $this->storage->remove($block);
 
         return false;
     }
 
-    /**
-     * Return block
-     *
-     * @param IdentifierInterface $identifier
-     * @return BlockInterface|null
-     */
-    public function getBlock(IdentifierInterface $identifier)
+    public function getBlock(IdentifierInterface $identifier): ?BlockInterface
     {
         if (!$this->isBlocked($identifier)) {
             return null;
         }
 
-        return $this->adapter->get($identifier);
+        return $this->storage->get($identifier);
     }
 }

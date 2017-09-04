@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,10 +14,8 @@
 namespace Brainbits\Blocking\Exception;
 
 /**
- * Exception interface
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Exception interface.
  */
-interface ExceptionInterface
+interface ExceptionInterface extends \Throwable
 {
 }

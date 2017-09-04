@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,16 +14,11 @@
 namespace Brainbits\Blocking\Identifier;
 
 /**
- * Block identifier interface
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Block identifier interface.
  */
 interface IdentifierInterface
 {
-    /**
-     * Return string representation of identifier
-     *
-     * @return string
-     */
-    public function __toString();
+    public function equals(IdentifierInterface $identifier): bool;
+
+    public function __toString(): string;
 }

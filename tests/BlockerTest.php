@@ -11,13 +11,14 @@
 
 namespace Brainbits\Blocking\Tests;
 
-use Brainbits\Blocking\Adapter\AdapterInterface;
+use Brainbits\Blocking\Exception\BlockFailedException;
+use Brainbits\Blocking\Storage\StorageInterface;
 use Brainbits\Blocking\Blocker;
 use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Identifier\IdentifierInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use Brainbits\Blocking\Validator\ValidatorInterface;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 
 /**
@@ -30,198 +31,202 @@ class BlockerTest extends TestCase
     /**
      * @var BlockInterface
      */
-    protected $blockMock;
-
-    /**
-     * @var AdapterInterface
-     */
-    protected $existingAdapterMock;
-
-    /**
-     * @var AdapterInterface
-     */
-    protected $nonExistingAdapterMock;
-
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validValidatorMock;
-
-    /**
-     * @var ValidatorInterface
-     */
-    protected $invalidValidatorMock;
+    protected $block;
 
     /**
      * @var IdentifierInterface
      */
-    protected $identifierMock;
+    protected $identifier;
 
     /**
      * @var OwnerInterface
      */
-    private $ownerMock;
+    private $owner;
 
     public function setUp()
     {
-        $this->identifierMock = $this->prophesize(IdentifierInterface::class);
+        $this->identifier = $this->prophesize(IdentifierInterface::class);
+        $this->identifier->__toString()
+            ->willReturn('foo');
 
-        $this->ownerMock = $this->prophesize(OwnerInterface::class);
-        $this->ownerMock->__toString()->willReturn('dummyOwner');
+        $this->owner = $this->prophesize(OwnerInterface::class);
+        $this->owner->__toString()
+            ->willReturn('dummyOwner');
 
-        $this->blockMock = $this->prophesize(BlockInterface::class);
-        $this->blockMock->getOwner()->willReturn($this->ownerMock->reveal());
-    }
-
-    private function getExistingAdapterMock()
-    {
-        $existingAdapterMock = $this->prophesize(AdapterInterface::class);
-        $existingAdapterMock->exists(Argument::type(IdentifierInterface::class))->willReturn(true);
-        $existingAdapterMock->get(Argument::type(IdentifierInterface::class))->willReturn($this->blockMock->reveal());
-
-        return $existingAdapterMock;
-    }
-
-    private function getNonexistingAdapterMock()
-    {
-        $nonExistingAdapterMock = $this->prophesize(AdapterInterface::class);
-        $nonExistingAdapterMock->exists(Argument::type(IdentifierInterface::class))->willReturn(false);
-
-        return $nonExistingAdapterMock;
-    }
-
-    private function getInvalidValidatorMock()
-    {
-        $invalidValidatorMock = $this->prophesize(ValidatorInterface::class);
-        $invalidValidatorMock->validate(Argument::type(BlockInterface::class))->willReturn(false);
-
-        return $invalidValidatorMock;
-    }
-
-    private function getValidValidatorMock()
-    {
-        $validValidatorMock = $this->prophesize(ValidatorInterface::class);
-        $validValidatorMock->validate(Argument::type(BlockInterface::class))->willReturn(true);
-
-        return $validValidatorMock;
+        $this->block = $this->prophesize(BlockInterface::class);
+        $this->block->getOwner()
+            ->willReturn($this->owner->reveal());
     }
 
     public function testBlockReturnsBlockOnNonexistingBlock()
     {
-        $nonExistingAdapterMock = $this->getNonexistingAdapterMock();
-        $nonExistingAdapterMock->write(Argument::type(BlockInterface::class))->shouldBeCalled();
+        $storage = $this->createNonexistingStorage();
+        $storage->write(Argument::type(BlockInterface::class))
+            ->shouldBeCalled();
 
-        $blocker = new Blocker($nonExistingAdapterMock->reveal(), $this->ownerMock->reveal(), $this->getInvalidValidatorMock()->reveal());
-        $result = $blocker->block($this->identifierMock->reveal());
+        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $result = $blocker->block($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
     }
 
     public function testBlockReturnsBlockOnExistingAndInvalidBlock()
     {
-        $existingAdapterMock = $this->getExistingAdapterMock();
-        $existingAdapterMock->remove(Argument::type(BlockInterface::class))->shouldBeCalled();
-        $existingAdapterMock->write(Argument::type(BlockInterface::class))->shouldBeCalled();
+        $storage = $this->createExistingStorage();
+        $storage->remove(Argument::type(BlockInterface::class))
+            ->shouldBeCalled();
+        $storage->write(Argument::type(BlockInterface::class))
+            ->shouldBeCalled();
 
-        $blocker = new Blocker($existingAdapterMock->reveal(), $this->ownerMock->reveal(), $this->getInvalidValidatorMock()->reveal());
-        $result = $blocker->block($this->identifierMock->reveal());
+        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $result = $blocker->block($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
     }
 
-    /**
-     * @expectedException \Exception
-     */
     public function testBlockThrowsExceptionOnExistingAndValidAndNonOwnerBlock()
     {
-        $existingAdapterMock = $this->getExistingAdapterMock();
-        $existingAdapterMock->write()->shouldNotBeCalled();
+        $this->expectException(BlockFailedException::class);
 
-        $ownerMock = $this->prophesize(OwnerInterface::class);
-        $ownerMock->__toString()->willReturn('otherOwner');
+        $storage = $this->createExistingStorage();
+        $storage->write()
+            ->shouldNotBeCalled();
 
-        $blocker = new Blocker($existingAdapterMock->reveal(), $ownerMock->reveal(), $this->getValidValidatorMock()->reveal());
-        $result = $blocker->block($this->identifierMock->reveal());
+        $owner = $this->prophesize(OwnerInterface::class);
+        $owner->__toString()
+            ->willReturn('otherOwner');
+
+        $this->block->isOwnedBy($owner->reveal())
+            ->willReturn(false);
+
+        $blocker = new Blocker($storage->reveal(), $owner->reveal(), $this->createValidValidator()->reveal());
+        $result = $blocker->block($this->identifier->reveal());
 
         $this->assertNull($result);
     }
 
     public function testBlockUpdatesBlockOnExistingAndValidAndOwnedBlock()
     {
-        $existingAdapterMock = $this->getExistingAdapterMock();
-        $existingAdapterMock->touch(Argument::type(BlockInterface::class))->shouldBeCalled();
+        $storage = $this->createExistingStorage();
+        $storage->touch($this->block)
+            ->shouldBeCalled();
 
-        $blocker = new Blocker($existingAdapterMock->reveal(), $this->ownerMock->reveal(), $this->getValidValidatorMock()->reveal());
-        $result = $blocker->block($this->identifierMock->reveal());
+        $this->block->isOwnedBy($this->owner->reveal())
+            ->willReturn(true);
+
+        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $result = $blocker->block($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
     }
 
-    public function testUnblockReturnsFalseOnExistingAndInvalidBlock()
+    public function testUnblockReturnsNullOnExistingAndInvalidBlock()
     {
-        $existingAdapterMock = $this->getExistingAdapterMock();
-        $existingAdapterMock->remove(Argument::type(BlockInterface::class))->shouldBeCalled();
+        $storage = $this->createExistingStorage();
+        $storage->remove(Argument::type(BlockInterface::class))
+            ->shouldBeCalled();
 
-        $blocker = new Blocker($existingAdapterMock->reveal(), $this->ownerMock->reveal(), $this->getInvalidValidatorMock()->reveal());
-        $result = $blocker->unblock($this->identifierMock->reveal());
+        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $result = $blocker->unblock($this->identifier->reveal());
 
-        $this->assertFalse($result);
+        $this->assertNull($result);
     }
 
-    public function testUnblockReturnsTrueOnExistingAndValidBlock()
+    public function testUnblockReturnsBlockOnExistingAndValidBlock()
     {
-        $existingAdapterMock = $this->getExistingAdapterMock();
-        $existingAdapterMock->remove(Argument::type(BlockInterface::class))->shouldBeCalled();
+        $storage = $this->createExistingStorage();
+        $storage->remove(Argument::type(BlockInterface::class))
+            ->shouldBeCalled();
 
-        $blocker = new Blocker($existingAdapterMock->reveal(), $this->ownerMock->reveal(), $this->getValidValidatorMock()->reveal());
-        $result = $blocker->unblock($this->identifierMock->reveal());
+        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $result = $blocker->unblock($this->identifier->reveal());
 
-        $this->assertTrue($result);
+        $this->assertSame($this->block->reveal(), $result);
     }
 
-    public function testUnblockReturnsFalseOnNonexistingBlock()
+    public function testUnblockReturnsNullOnNonexistingBlock()
     {
-        $nonExistingAdapterMock = $this->getNonexistingAdapterMock();
-        $nonExistingAdapterMock->remove()->shouldNotBeCalled();
+        $storage = $this->createNonexistingStorage();
+        $storage->remove()
+            ->shouldNotBeCalled();
 
-        $blocker = new Blocker($nonExistingAdapterMock->reveal(), $this->ownerMock->reveal(), $this->getInvalidValidatorMock()->reveal());
-        $result = $blocker->unblock($this->identifierMock->reveal());
+        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $result = $blocker->unblock($this->identifier->reveal());
 
-        $this->assertFalse($result);
+        $this->assertNull($result);
     }
 
     public function testIsBlockedReturnsFalseOnExistingAndInvalidBlock()
     {
-        $existingAdapterMock = $this->getExistingAdapterMock();
-        $existingAdapterMock->remove(Argument::type(BlockInterface::class))->shouldBeCalled();
+        $storage = $this->createExistingStorage();
+        $storage->remove(Argument::type(BlockInterface::class))
+            ->shouldBeCalled();
 
-        $blocker = new Blocker($existingAdapterMock->reveal(), $this->ownerMock->reveal(), $this->getInvalidValidatorMock()->reveal());
-        $result = $blocker->isBlocked($this->identifierMock->reveal());
+        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $result = $blocker->isBlocked($this->identifier->reveal());
 
         $this->assertFalse($result);
     }
 
     public function testIsBlockedReturnsTrueOnExistingAndValidBlock()
     {
-        $blocker = new Blocker($this->getExistingAdapterMock()->reveal(), $this->ownerMock->reveal(), $this->getValidValidatorMock()->reveal());
-        $result = $blocker->isBlocked($this->identifierMock->reveal());
+        $blocker = new Blocker($this->createExistingStorage()->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $result = $blocker->isBlocked($this->identifier->reveal());
 
         $this->assertTrue($result);
     }
 
     public function testIsBlockedReturnsFalseOnNonexistingBlock()
     {
-        $blocker = new Blocker($this->getNonexistingAdapterMock()->reveal(), $this->ownerMock->reveal(), $this->getValidValidatorMock()->reveal());
-        $result = $blocker->isBlocked($this->identifierMock->reveal());
+        $blocker = new Blocker($this->createNonexistingStorage()->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $result = $blocker->isBlocked($this->identifier->reveal());
 
         $this->assertFalse($result);
     }
 
     public function testGetBlockReturnsBlockOnExistingBlock()
     {
-        $blocker = new Blocker($this->getExistingAdapterMock()->reveal(), $this->ownerMock->reveal(), $this->getValidValidatorMock()->reveal());
-        $result = $blocker->getBlock($this->identifierMock->reveal());
+        $blocker = new Blocker($this->createExistingStorage()->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $result = $blocker->getBlock($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
+    }
+
+    private function createExistingStorage()
+    {
+        $storage = $this->prophesize(StorageInterface::class);
+        $storage->exists(Argument::type(IdentifierInterface::class))
+            ->willReturn(true);
+        $storage->get(Argument::type(IdentifierInterface::class))
+            ->willReturn($this->block->reveal());
+
+        return $storage;
+    }
+
+    private function createNonexistingStorage()
+    {
+        $storage = $this->prophesize(StorageInterface::class);
+        $storage->exists(Argument::type(IdentifierInterface::class))
+            ->willReturn(false);
+
+        return $storage;
+    }
+
+    private function createInvalidValidator()
+    {
+        $validator = $this->prophesize(ValidatorInterface::class);
+        $validator->validate(Argument::type(BlockInterface::class))
+            ->willReturn(false);
+
+        return $validator;
+    }
+
+    private function createValidValidator()
+    {
+        $validator = $this->prophesize(ValidatorInterface::class);
+        $validator->validate(Argument::type(BlockInterface::class))
+            ->willReturn(true);
+
+        return $validator;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -14,29 +16,26 @@ namespace Brainbits\Blocking\Owner;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
- * Session owner
- *
- * @author Stephan Wentz <sw@brainbits.net>
+ * Symfony session owner.
  */
-class SessionOwner implements OwnerInterface
+class SymfonySessionOwner implements OwnerInterface
 {
     /**
      * @var string
      */
-    protected $sessionId;
+    private $sessionId;
 
-    /**
-     * @param SessionInterface $session
-     */
     public function __construct(SessionInterface $session)
     {
         $this->sessionId = $session->getId();
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __toString()
+    public function equals(OwnerInterface $owner): bool
+    {
+        return (string) $this === (string) $owner;
+    }
+
+    public function __toString(): string
     {
         return $this->sessionId;
     }
