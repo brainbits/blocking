@@ -28,7 +28,7 @@ class IOException extends RuntimeException
         return new self("Touch file $filename failed.");
     }
 
-    public static function createUnlinFailed(string $filename): self
+    public static function createUnlinkFailed(string $filename): self
     {
         return new self("Unlink file $filename failed.");
     }

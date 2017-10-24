@@ -30,7 +30,7 @@ class FilesystemStorage implements StorageInterface
 
     public function __construct(string $root)
     {
-        $this->root = $root;
+        $this->root = rtrim($root, '/');
     }
 
     public function write(BlockInterface $block): bool
@@ -67,7 +67,9 @@ class FilesystemStorage implements StorageInterface
 
         $filename = $this->getFilename($block->getIdentifier());
         if (false === unlink($filename)) {
-            throw IOException::createUnlinFailed($filename);
+            if (file_exists($filename)) {
+                throw IOException::createUnlinkFailed($filename);
+            }
         }
 
         return true;
