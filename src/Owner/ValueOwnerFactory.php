@@ -14,9 +14,9 @@ declare(strict_types = 1);
 namespace Brainbits\Blocking\Owner;
 
 /**
- * Value owner.
+ * Value owner factory.
  */
-class ValueOwner implements OwnerInterface
+class ValueOwnerFactory implements OwnerFactoryInterface
 {
     private $value;
 
@@ -25,13 +25,8 @@ class ValueOwner implements OwnerInterface
         $this->value = $value;
     }
 
-    public function equals(OwnerInterface $owner): bool
+    public function createOwner(): OwnerInterface
     {
-        return (string) $this === (string) $owner;
-    }
-
-    public function __toString(): string
-    {
-        return $this->value;
+        return new Owner($this->value);
     }
 }

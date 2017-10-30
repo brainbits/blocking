@@ -13,21 +13,16 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Owner;
 
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-
 /**
- * Symfony session owner.
+ * Owner.
  */
-class SymfonySessionOwner implements OwnerInterface
+class Owner implements OwnerInterface
 {
-    /**
-     * @var string
-     */
-    private $sessionId;
+    private $ownerValue;
 
-    public function __construct(SessionInterface $session)
+    public function __construct(string $ownerValue)
     {
-        $this->sessionId = $session->getId();
+        $this->ownerValue = $ownerValue;
     }
 
     public function equals(OwnerInterface $owner): bool
@@ -37,6 +32,6 @@ class SymfonySessionOwner implements OwnerInterface
 
     public function __toString(): string
     {
-        return $this->sessionId;
+        return $this->ownerValue;
     }
 }

@@ -12,23 +12,19 @@
 namespace Brainbits\Blocking\Tests;
 
 use Brainbits\Blocking\Block;
-use Brainbits\Blocking\Identifier\IdentifierInterface;
+use Brainbits\Blocking\Identity\IdentityInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
-use DateTime;
 use DateTimeImmutable;
-use DateTimeInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Block test
- *
- * @author Stephan Wentz <sw@brainbits.net>
  */
 class BlockTest extends TestCase
 {
     /**
-     * @var IdentifierInterface|ObjectProphecy
+     * @var IdentityInterface|ObjectProphecy
      */
     private $identifier;
 
@@ -37,9 +33,9 @@ class BlockTest extends TestCase
      */
     private $owner;
 
-    public function setUp()
+    protected function setUp()
     {
-        $this->identifier = $this->prophesize(IdentifierInterface::class)->reveal();
+        $this->identifier = $this->prophesize(IdentityInterface::class)->reveal();
 
         $this->owner = $this->prophesize(OwnerInterface::class);
         $this->owner->__toString()
@@ -57,7 +53,7 @@ class BlockTest extends TestCase
     {
         $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
 
-        $this->assertSame($this->identifier, $block->getIdentifier());
+        $this->assertSame($this->identifier, $block->getIdentity());
     }
 
     public function testGetOwnerReturnsCorrectValue()

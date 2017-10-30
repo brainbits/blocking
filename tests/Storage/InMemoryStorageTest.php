@@ -12,22 +12,16 @@
 namespace Brainbits\Blocking\Tests\Storage;
 
 use Brainbits\Blocking\BlockInterface;
-use Brainbits\Blocking\Storage\FilesystemStorage;
-use Brainbits\Blocking\Exception\DirectoryNotWritableException;
-use Brainbits\Blocking\Exception\FileNotWritableException;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use Brainbits\Blocking\Storage\InMemoryStorage;
 use DateTimeImmutable;
-use org\bovigo\vfs\vfsStream;
 use Brainbits\Blocking\Block;
-use Brainbits\Blocking\Identifier\Identifier;
+use Brainbits\Blocking\Identity\Identity;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * In memory storage test
- *
- * @author Stephan Wentz <sw@brainbits.net>
  */
 class InMemoryStorageTest extends TestCase
 {
@@ -41,7 +35,7 @@ class InMemoryStorageTest extends TestCase
      */
     private $owner;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->storage = new InMemoryStorage();
 
@@ -52,7 +46,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testConstructWithBlock()
     {
-        $identifier = new Identifier('test_block');
+        $identifier = new Identity('test_block');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
 
         $storage = new InMemoryStorage($block);
@@ -64,7 +58,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testWriteSucceedesOnNewBlock()
     {
-        $identifier = new Identifier('test_block');
+        $identifier = new Identity('test_block');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
 
         $result = $this->storage->write($block);
@@ -74,7 +68,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testTouchSucceedesOnExistingBlock()
     {
-        $identifier = new Identifier('test_lock');
+        $identifier = new Identity('test_lock');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
 
         $this->storage->write($block);
@@ -85,7 +79,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testRemoveReturnsFalseOnNonexistingBlock()
     {
-        $identifier = new Identifier('test_unlock');
+        $identifier = new Identity('test_unlock');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
 
         $result = $this->storage->remove($block);
@@ -95,7 +89,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testUnblockReturnsTrueOnExistingBlock()
     {
-        $identifier = new Identifier('test_unlock');
+        $identifier = new Identity('test_unlock');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
 
         $this->storage->write($block);
@@ -106,7 +100,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testExistsReturnsFalseOnNonexistingBlock()
     {
-        $identifier = new Identifier('test_isblocked');
+        $identifier = new Identity('test_isblocked');
 
         $result = $this->storage->exists($identifier);
 
@@ -115,7 +109,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testIsBlockedReturnsTrueOnExistingBlock()
     {
-        $identifier = new Identifier('test_isblocked');
+        $identifier = new Identity('test_isblocked');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
 
         $this->storage->write($block);
@@ -126,7 +120,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testGetReturnsNullOnNonexistingFile()
     {
-        $identifier = new Identifier('test_isblocked');
+        $identifier = new Identity('test_isblocked');
 
         $result = $this->storage->get($identifier);
 
@@ -135,7 +129,7 @@ class InMemoryStorageTest extends TestCase
 
     public function testGetReturnsBlockOnExistingFile()
     {
-        $identifier = new Identifier('test_isblocked');
+        $identifier = new Identity('test_isblocked');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
 
         $this->storage->write($block);

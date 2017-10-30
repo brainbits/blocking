@@ -11,27 +11,27 @@ declare(strict_types = 1);
  * file that was distributed with this source code.
  */
 
-namespace Brainbits\Blocking\Identifier;
+namespace Brainbits\Blocking\Identity;
 
 /**
  * Standard identifier.
  */
-class Identifier implements IdentifierInterface
+class Identity implements IdentityInterface
 {
-    private $identifier;
+    private $identityValue;
 
-    public function __construct(string $identifier)
+    public function __construct(string $identityValue)
     {
-        $this->identifier = $identifier;
+        $this->identityValue = $identityValue;
     }
 
-    public function equals(IdentifierInterface $identifier): bool
+    public function equals(IdentityInterface $identifier): bool
     {
-        return (string) $identifier === (string) $this->identifier;
+        return (string) $identifier === (string) $this;
     }
 
     public function __toString(): string
     {
-        return $this->identifier;
+        return $this->identityValue;
     }
 }

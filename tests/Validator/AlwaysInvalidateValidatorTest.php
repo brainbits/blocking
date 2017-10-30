@@ -17,8 +17,6 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Always invalidate validator test
- *
- * @author Stephan Wentz <sw@brainbits.net>
  */
 class AlwaysInvalidateValidatorTest extends TestCase
 {

@@ -11,19 +11,14 @@ declare(strict_types = 1);
  * file that was distributed with this source code.
  */
 
-namespace Brainbits\Blocking;
-
-use Brainbits\Blocking\Identity\IdentityInterface;
+namespace Brainbits\Blocking\Identity;
 
 /**
- * Blockable interface.
+ * Block identity interface.
  */
-interface BlockableInterface
+interface IdentityInterface
 {
-    /**
-     * Return block identifier
-     *
-     * @return IdentityInterface
-     */
-    public function getBlockIdentifier();
+    public function equals(IdentityInterface $identifier): bool;
+
+    public function __toString(): string;
 }

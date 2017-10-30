@@ -11,28 +11,26 @@
 
 namespace Brainbits\Blocking\Tests\Identifier;
 
-use Brainbits\Blocking\Identifier\Identifier;
+use Brainbits\Blocking\Identity\Identity;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Identifier test
- *
- * @author Stephan Wentz <sw@brainbits.net>
  */
 class IdentifierTest extends TestCase
 {
     public function testConstruct()
     {
-        $identifier = new Identifier('test_123');
+        $identifier = new Identity('test_123');
 
-        $this->assertInstanceOf(Identifier::class, $identifier);
+        $this->assertInstanceOf(Identity::class, $identifier);
     }
 
     public function testEquals()
     {
-        $identifier1 = new Identifier('foo');
-        $identifier2 = new Identifier('foo');
-        $identifier3 = new Identifier('bar');
+        $identifier1 = new Identity('foo');
+        $identifier2 = new Identity('foo');
+        $identifier3 = new Identity('bar');
 
         $this->assertTrue($identifier1->equals($identifier2));
         $this->assertFalse($identifier1->equals($identifier3));
@@ -41,7 +39,7 @@ class IdentifierTest extends TestCase
 
     public function testToString()
     {
-        $identifier = new Identifier('test_123');
+        $identifier = new Identity('test_123');
 
         $this->assertEquals('test_123', $identifier);
     }
