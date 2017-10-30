@@ -14,7 +14,7 @@ declare(strict_types = 1);
 namespace Brainbits\Blocking\Storage;
 
 use Brainbits\Blocking\BlockInterface;
-use Brainbits\Blocking\Identifier\IdentifierInterface;
+use Brainbits\Blocking\Identity\IdentityInterface;
 
 /**
  * Block storage interface.
@@ -27,7 +27,7 @@ interface StorageInterface
 
     public function remove(BlockInterface $block): bool;
 
-    public function exists(IdentifierInterface $identifier): bool;
+    public function exists(IdentityInterface $identifier): bool;
 
-    public function get(IdentifierInterface $identifier): ?BlockInterface;
+    public function get(IdentityInterface $identifier): ?BlockInterface;
 }

@@ -11,14 +11,12 @@ declare(strict_types = 1);
  * file that was distributed with this source code.
  */
 
-namespace Brainbits\Blocking\Identifier;
+namespace Brainbits\Blocking\Owner;
 
 /**
- * Block identifier interface.
+ * Block owner factory interface.
  */
-interface IdentifierInterface
+interface OwnerFactoryInterface
 {
-    public function equals(IdentifierInterface $identifier): bool;
-
-    public function __toString(): string;
+    public function createOwner(): OwnerInterface;
 }

@@ -13,7 +13,7 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking;
 
-use Brainbits\Blocking\Identifier\IdentifierInterface;
+use Brainbits\Blocking\Identity\IdentityInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use DateTimeImmutable;
 
@@ -22,7 +22,7 @@ use DateTimeImmutable;
  */
 interface BlockInterface
 {
-    public function getIdentifier(): IdentifierInterface;
+    public function getIdentity(): IdentityInterface;
 
     public function getOwner(): OwnerInterface;
 

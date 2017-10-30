@@ -11,51 +11,55 @@
 
 namespace Brainbits\Blocking\Tests;
 
-use Brainbits\Blocking\Exception\BlockFailedException;
-use Brainbits\Blocking\Storage\StorageInterface;
 use Brainbits\Blocking\Blocker;
 use Brainbits\Blocking\BlockInterface;
-use Brainbits\Blocking\Identifier\IdentifierInterface;
-use Brainbits\Blocking\Owner\OwnerInterface;
+use Brainbits\Blocking\Exception\BlockFailedException;
+use Brainbits\Blocking\Identity\IdentityInterface;
+use Brainbits\Blocking\Owner\Owner;
+use Brainbits\Blocking\Owner\OwnerFactoryInterface;
+use Brainbits\Blocking\Storage\StorageInterface;
 use Brainbits\Blocking\Validator\ValidatorInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Blocker test
- *
- * @author Stephan Wentz <sw@brainbits.net>
  */
 class BlockerTest extends TestCase
 {
     /**
-     * @var BlockInterface
+     * @var BlockInterface|ObjectProphecy
      */
     protected $block;
 
     /**
-     * @var IdentifierInterface
+     * @var IdentityInterface|ObjectProphecy
      */
     protected $identifier;
 
     /**
-     * @var OwnerInterface
+     * @var OwnerFactoryInterface|ObjectProphecy
      */
+    private $ownerFactory;
+
     private $owner;
 
-    public function setUp()
+    protected function setUp()
     {
-        $this->identifier = $this->prophesize(IdentifierInterface::class);
+        $this->owner = new Owner('bar');
+
+        $this->identifier = $this->prophesize(IdentityInterface::class);
         $this->identifier->__toString()
             ->willReturn('foo');
 
-        $this->owner = $this->prophesize(OwnerInterface::class);
-        $this->owner->__toString()
-            ->willReturn('dummyOwner');
+        $this->ownerFactory = $this->prophesize(OwnerFactoryInterface::class);
+        $this->ownerFactory->createOwner()
+            ->willReturn($this->owner);
 
         $this->block = $this->prophesize(BlockInterface::class);
         $this->block->getOwner()
-            ->willReturn($this->owner->reveal());
+            ->willReturn(new Owner('baz'));
     }
 
     public function testBlockReturnsBlockOnNonexistingBlock()
@@ -64,7 +68,11 @@ class BlockerTest extends TestCase
         $storage->write(Argument::type(BlockInterface::class))
             ->shouldBeCalled();
 
-        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $blocker = new Blocker(
+            $storage->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createInvalidValidator()->reveal()
+        );
         $result = $blocker->block($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
@@ -78,7 +86,11 @@ class BlockerTest extends TestCase
         $storage->write(Argument::type(BlockInterface::class))
             ->shouldBeCalled();
 
-        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $blocker = new Blocker(
+            $storage->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createInvalidValidator()->reveal()
+        );
         $result = $blocker->block($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
@@ -92,14 +104,14 @@ class BlockerTest extends TestCase
         $storage->write()
             ->shouldNotBeCalled();
 
-        $owner = $this->prophesize(OwnerInterface::class);
-        $owner->__toString()
-            ->willReturn('otherOwner');
-
-        $this->block->isOwnedBy($owner->reveal())
+        $this->block->isOwnedBy($this->owner)
             ->willReturn(false);
 
-        $blocker = new Blocker($storage->reveal(), $owner->reveal(), $this->createValidValidator()->reveal());
+        $blocker = new Blocker(
+            $storage->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createValidValidator()->reveal()
+        );
         $result = $blocker->block($this->identifier->reveal());
 
         $this->assertNull($result);
@@ -111,10 +123,14 @@ class BlockerTest extends TestCase
         $storage->touch($this->block)
             ->shouldBeCalled();
 
-        $this->block->isOwnedBy($this->owner->reveal())
+        $this->block->isOwnedBy($this->owner)
             ->willReturn(true);
 
-        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $blocker = new Blocker(
+            $storage->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createValidValidator()->reveal()
+        );
         $result = $blocker->block($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
@@ -126,7 +142,11 @@ class BlockerTest extends TestCase
         $storage->remove(Argument::type(BlockInterface::class))
             ->shouldBeCalled();
 
-        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $blocker = new Blocker(
+            $storage->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createInvalidValidator()->reveal()
+        );
         $result = $blocker->unblock($this->identifier->reveal());
 
         $this->assertNull($result);
@@ -138,7 +158,11 @@ class BlockerTest extends TestCase
         $storage->remove(Argument::type(BlockInterface::class))
             ->shouldBeCalled();
 
-        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $blocker = new Blocker(
+            $storage->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createValidValidator()->reveal()
+        );
         $result = $blocker->unblock($this->identifier->reveal());
 
         $this->assertSame($this->block->reveal(), $result);
@@ -150,7 +174,11 @@ class BlockerTest extends TestCase
         $storage->remove()
             ->shouldNotBeCalled();
 
-        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $blocker = new Blocker(
+            $storage->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createInvalidValidator()->reveal()
+        );
         $result = $blocker->unblock($this->identifier->reveal());
 
         $this->assertNull($result);
@@ -162,7 +190,7 @@ class BlockerTest extends TestCase
         $storage->remove(Argument::type(BlockInterface::class))
             ->shouldBeCalled();
 
-        $blocker = new Blocker($storage->reveal(), $this->owner->reveal(), $this->createInvalidValidator()->reveal());
+        $blocker = new Blocker($storage->reveal(), $this->ownerFactory->reveal(), $this->createInvalidValidator()->reveal());
         $result = $blocker->isBlocked($this->identifier->reveal());
 
         $this->assertFalse($result);
@@ -170,7 +198,11 @@ class BlockerTest extends TestCase
 
     public function testIsBlockedReturnsTrueOnExistingAndValidBlock()
     {
-        $blocker = new Blocker($this->createExistingStorage()->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $blocker = new Blocker(
+            $this->createExistingStorage()->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createValidValidator()->reveal()
+        );
         $result = $blocker->isBlocked($this->identifier->reveal());
 
         $this->assertTrue($result);
@@ -178,7 +210,11 @@ class BlockerTest extends TestCase
 
     public function testIsBlockedReturnsFalseOnNonexistingBlock()
     {
-        $blocker = new Blocker($this->createNonexistingStorage()->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $blocker = new Blocker(
+            $this->createNonexistingStorage()->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createValidValidator()->reveal()
+        );
         $result = $blocker->isBlocked($this->identifier->reveal());
 
         $this->assertFalse($result);
@@ -186,32 +222,45 @@ class BlockerTest extends TestCase
 
     public function testGetBlockReturnsBlockOnExistingBlock()
     {
-        $blocker = new Blocker($this->createExistingStorage()->reveal(), $this->owner->reveal(), $this->createValidValidator()->reveal());
+        $blocker = new Blocker(
+            $this->createExistingStorage()->reveal(),
+            $this->ownerFactory->reveal(),
+            $this->createValidValidator()->reveal()
+        );
         $result = $blocker->getBlock($this->identifier->reveal());
 
         $this->assertInstanceOf(BlockInterface::class, $result);
     }
 
+    /**
+     * @return StorageInterface|ObjectProphecy
+     */
     private function createExistingStorage()
     {
         $storage = $this->prophesize(StorageInterface::class);
-        $storage->exists(Argument::type(IdentifierInterface::class))
+        $storage->exists(Argument::type(IdentityInterface::class))
             ->willReturn(true);
-        $storage->get(Argument::type(IdentifierInterface::class))
+        $storage->get(Argument::type(IdentityInterface::class))
             ->willReturn($this->block->reveal());
 
         return $storage;
     }
 
+    /**
+     * @return StorageInterface|ObjectProphecy
+     */
     private function createNonexistingStorage()
     {
         $storage = $this->prophesize(StorageInterface::class);
-        $storage->exists(Argument::type(IdentifierInterface::class))
+        $storage->exists(Argument::type(IdentityInterface::class))
             ->willReturn(false);
 
         return $storage;
     }
 
+    /**
+     * @return ValidatorInterface|ObjectProphecy
+     */
     private function createInvalidValidator()
     {
         $validator = $this->prophesize(ValidatorInterface::class);
@@ -221,6 +270,9 @@ class BlockerTest extends TestCase
         return $validator;
     }
 
+    /**
+     * @return ValidatorInterface|ObjectProphecy
+     */
     private function createValidValidator()
     {
         $validator = $this->prophesize(ValidatorInterface::class);

@@ -17,7 +17,7 @@ use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Exception\DirectoryNotWritableException;
 use Brainbits\Blocking\Exception\FileNotWritableException;
 use Brainbits\Blocking\Exception\IOException;
-use Brainbits\Blocking\Identifier\IdentifierInterface;
+use Brainbits\Blocking\Identity\IdentityInterface;
 use DateTimeImmutable;
 
 /**
@@ -35,7 +35,7 @@ class FilesystemStorage implements StorageInterface
 
     public function write(BlockInterface $block): bool
     {
-        $filename = $this->getFilename($block->getIdentifier());
+        $filename = $this->getFilename($block->getIdentity());
 
         if (false === file_put_contents($filename, serialize($block))) {
             throw IOException::createWriteFailed($filename);
@@ -46,7 +46,7 @@ class FilesystemStorage implements StorageInterface
 
     public function touch(BlockInterface $block): bool
     {
-        $filename = $this->getFilename($block->getIdentifier());
+        $filename = $this->getFilename($block->getIdentity());
 
         if (false === touch($filename)) {
             throw IOException::createTouchFailed($filename);
@@ -61,11 +61,11 @@ class FilesystemStorage implements StorageInterface
 
     public function remove(BlockInterface $block): bool
     {
-        if (!$this->exists($block->getIdentifier())) {
+        if (!$this->exists($block->getIdentity())) {
             return false;
         }
 
-        $filename = $this->getFilename($block->getIdentifier());
+        $filename = $this->getFilename($block->getIdentity());
         if (false === unlink($filename)) {
             if (file_exists($filename)) {
                 throw IOException::createUnlinkFailed($filename);
@@ -75,14 +75,14 @@ class FilesystemStorage implements StorageInterface
         return true;
     }
 
-    public function exists(IdentifierInterface $identifier): bool
+    public function exists(IdentityInterface $identifier): bool
     {
         $filename = $this->getFilename($identifier);
 
         return file_exists($filename);
     }
 
-    public function get(IdentifierInterface $identifier): ?BlockInterface
+    public function get(IdentityInterface $identifier): ?BlockInterface
     {
         if (!$this->exists($identifier)) {
             return null;
@@ -97,7 +97,7 @@ class FilesystemStorage implements StorageInterface
         return $block;
     }
 
-    private function getFilename(IdentifierInterface $identifier): string
+    private function getFilename(IdentityInterface $identifier): string
     {
         return $this->ensureFileIsWritable($this->ensureDirectoryExists($this->root).'/'.$identifier);
     }

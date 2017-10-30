@@ -13,7 +13,7 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking;
 
-use Brainbits\Blocking\Identifier\IdentifierInterface;
+use Brainbits\Blocking\Identity\IdentityInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use DateTimeImmutable;
 
@@ -27,7 +27,7 @@ class Block implements BlockInterface
     private $createdAt;
     private $updatedAt;
 
-    public function __construct(IdentifierInterface $identifier, OwnerInterface $owner, DateTimeImmutable $createdAt)
+    public function __construct(IdentityInterface $identifier, OwnerInterface $owner, DateTimeImmutable $createdAt)
     {
         $this->identifier = $identifier;
         $this->owner = $owner;
@@ -35,7 +35,7 @@ class Block implements BlockInterface
         $this->updatedAt = $createdAt;
     }
 
-    public function getIdentifier(): IdentifierInterface
+    public function getIdentity(): IdentityInterface
     {
         return $this->identifier;
     }

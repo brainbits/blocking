@@ -18,8 +18,6 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * Expired validator test
- *
- * @author Stephan Wentz <sw@brainbits.net>
  */
 class ExpiredValidatorTest extends TestCase
 {

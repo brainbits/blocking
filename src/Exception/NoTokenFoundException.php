@@ -13,15 +13,13 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Exception;
 
-use Brainbits\Blocking\Identity\IdentityInterface;
-
 /**
- * Block failed exception.
+ * No token found exception.
  */
-class BlockFailedException extends RuntimeException
+class NoTokenFoundException extends RuntimeException
 {
-    public static function createAlreadyBlocked(IdentityInterface $identifier): self
+    public static function create(): self
     {
-        return new self("Identifier $identifier is already blocked.");
+        return new self("No token found.");
     }
 }
