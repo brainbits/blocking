@@ -31,9 +31,4 @@ class SymfonySessionOwnerFactory implements OwnerFactoryInterface
     {
         return new Owner($this->session->getId());
     }
-
-    public function __toString(): string
-    {
-        return $this->session->getId();
-    }
 }
