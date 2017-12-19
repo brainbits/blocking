@@ -13,16 +13,32 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Exception;
 
+use Throwable;
+
 /**
  * Unserialize failed exception.
  */
 final class UnserializeFailedException extends RuntimeException
 {
+    private $input;
+
+    public function __construct(string $message, ?int $code, ?Throwable $previous, string $input)
+    {
+        parent::__construct($message, $code, $previous);
+
+        $this->input = $input;
+    }
+
     /**
      * @param mixed $input
      */
     public static function createFromInput($input): self
     {
-        return new self("Unserialize failed: ".$input);
+        return new self("Unserialize failed.", null, null, (string) $input);
+    }
+
+    public function getInput(): string
+    {
+        return $this->input;
     }
 }
