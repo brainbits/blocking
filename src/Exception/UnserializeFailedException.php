@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types = 1);
+
+/*
+ * This file is part of the brainbits blocking package.
+ *
+ * (c) brainbits GmbH (http://www.brainbits.net)
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Brainbits\Blocking\Exception;
+
+/**
+ * Unserialize failed exception.
+ */
+final class UnserializeFailedException extends RuntimeException
+{
+    /**
+     * @param mixed $input
+     */
+    public static function createFromInput($input): self
+    {
+        return new self("Unserialize failed: ".$input);
+    }
+}

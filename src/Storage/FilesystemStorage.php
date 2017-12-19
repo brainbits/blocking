@@ -17,6 +17,7 @@ use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Exception\DirectoryNotWritableException;
 use Brainbits\Blocking\Exception\FileNotWritableException;
 use Brainbits\Blocking\Exception\IOException;
+use Brainbits\Blocking\Exception\UnserializeFailedException;
 use Brainbits\Blocking\Identity\IdentityInterface;
 use DateTimeImmutable;
 
@@ -92,6 +93,10 @@ class FilesystemStorage implements StorageInterface
         $content = file_get_contents($filename);
         $updatedAt = DateTimeImmutable::createFromFormat('U', (string) filemtime($filename));
         $block = unserialize($content);
+        if (!$block) {
+            throw UnserializeFailedException::createFromInput($content);
+        }
+
         $block->touch($updatedAt);
 
         return $block;
