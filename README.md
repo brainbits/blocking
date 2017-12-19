@@ -1,5 +1,15 @@
 Blocking Component [![Build Status](https://travis-ci.org/brainbits/blocking.png?branch=master)](https://travis-ci.org/brainbits/blocking) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382/mini.png)](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382)
 ==================
+
+
+[![Latest Version](https://img.shields.io/github/release/brainbits/blocking.svg?style=flat-square)](https://github.com/brainbits/blocking/releases)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Build Status](https://img.shields.io/travis/brainbits/blocking/master.svg?style=flat-square)](https://travis-ci.org/brainbits/blocking)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/brainbits/blocking.svg?style=flat-square)](https://scrutinizer-ci.com/g/brainbits/blocking/code-structure)
+[![Quality Score](https://img.shields.io/scrutinizer/g/brainbits/blocking.svg?style=flat-square)](https://scrutinizer-ci.com/g/brainbits/blocking)
+[![Insight](https://img.shields.io/sensiolabs/i/bc35527c-11d8-45a1-a482-18d376cfe382.svg)](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382)
+[![Total Downloads](https://img.shields.io/packagist/dt/brainbits/blocking.svg?style=flat-square)](https://packagist.org/packages/brainbits/blocking)
+
 The Blocking Component provides methods to manage content based blocking.
 
     <?php
