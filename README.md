@@ -1,6 +1,5 @@
-Blocking Component [![Build Status](https://travis-ci.org/brainbits/blocking.png?branch=master)](https://travis-ci.org/brainbits/blocking) [![SensioLabsInsight](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382/mini.png)](https://insight.sensiolabs.com/projects/bc35527c-11d8-45a1-a482-18d376cfe382)
+Blocking Component
 ==================
-
 
 [![Latest Version](https://img.shields.io/github/release/brainbits/blocking.svg?style=flat-square)](https://github.com/brainbits/blocking/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
