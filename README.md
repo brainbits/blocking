@@ -14,44 +14,46 @@ The Blocking Component provides methods to manage content based blocking.
     <?php
 
     use Brainbits\Blocking\Blocker;
-    use Brainbits\Blocking\Adapter\FilesystemAdapter;
-    use Brainbits\Blocking\Owner\SessionOwner;
+    use Brainbits\Blocking\Identity\Identity;
+    use Brainbits\Blocking\Owner\SymfonySessionOwnerFactory;
+    use Brainbits\Blocking\Storage\FilesystemStorage;
+    use Brainbits\Blocking\Validator\ExpiredValidator;
 
-    $adapter   = new FilesystemAdapter('/where/to/store/blocks' /* path to directory on filesystem */);
-    $owner     = new SessionOwner($session /* symfony session */);
+    $storage = new FilesystemStorage('/where/to/store/blocks' /* path to directory on filesystem */);
+    $ownerFactory = new SymfonySessionOwnerFactory($session /* symfony session */);
     $validator = new ExpiredValidator(300 /* block will expire after 300 seconds */);
 
-    $blocker = new Blocker($adapter, $owner, $validator);
+    $blocker = new Blocker($storage, $ownerFactory, $validator);
 
-    $identifier = new Identifer('myContent', 123);
+    $identity = new Identity('my_content_123);
 
-    $block = $blocker->block($identifier);
-    $result = $blocker->unblock($identifier);
-    $result = $blocker->isBlocked($identifier);
-    $block = $blocker->getBlock($identifier);
+    $block = $blocker->block($identity);
+    $result = $blocker->unblock($identity);
+    $result = $blocker->isBlocked($identity);
+    $block = $blocker->getBlock($identity);
 
-Blocking Adapters
------------------
-Blocking adapters are used to store the block information.
+Blocking Storage
+----------------
+The blocking storage is used to store the block information.
 
-A file based blocking adapter is provided.
+A file based blocking storage is provided.
 It writes block-files to the filesystem, based on the blocking identifier.
 
-Blocking Identifiers
---------------------
-Blocking identifiers are used to identify the content that is being blocked.
+Blocking Identity
+-----------------
+The blocking identity is used to identify the content that is being blocked.
 
-A general purpose blocking identifier is provided, that uses content type and
-content id to create an identifier string.
+A general purpose blocking identify is provided, that uses a string as an identifier.
 
-Blocking Owners
----------------
-Blocking owners are used to identify the user that created the block.
+Blocking Owner
+--------------
+The blocking owner is used to identify the user that created the block.
 
 A symfony session based owner class is provided.
 
-Blocking Validators
--------------------
-Blocking validators test wether or not an existing block is still valid.
+Blocking Validator
+------------------
+The blocking validator is used to test wether or not an existing block is still valid.
 
 A validator that checks a block via last modification time is provided.
+
