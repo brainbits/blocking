@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ValueOwnerFactoryTest extends TestCase
 {
-    public function testCreate()
+    public function testCreate(): void
     {
         $factory = new ValueOwnerFactory('foo');
         $owner = $factory->createOwner();

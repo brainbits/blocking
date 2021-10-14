@@ -18,6 +18,7 @@ use DateTimeImmutable;
 use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Identity\Identity;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
 /**
@@ -25,6 +26,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 class InMemoryStorageTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var InMemoryStorage
      */
@@ -35,7 +38,7 @@ class InMemoryStorageTest extends TestCase
      */
     private $owner;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->storage = new InMemoryStorage();
 
@@ -44,7 +47,7 @@ class InMemoryStorageTest extends TestCase
             ->willReturn('dummyOwner');
     }
 
-    public function testConstructWithBlock()
+    public function testConstructWithBlock(): void
     {
         $identifier = new Identity('test_block');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
@@ -56,7 +59,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testWriteSucceedesOnNewBlock()
+    public function testWriteSucceedesOnNewBlock(): void
     {
         $identifier = new Identity('test_block');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
@@ -66,7 +69,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testTouchSucceedesOnExistingBlock()
+    public function testTouchSucceedesOnExistingBlock(): void
     {
         $identifier = new Identity('test_lock');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
@@ -77,7 +80,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testRemoveReturnsFalseOnNonexistingBlock()
+    public function testRemoveReturnsFalseOnNonexistingBlock(): void
     {
         $identifier = new Identity('test_unlock');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
@@ -87,7 +90,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testUnblockReturnsTrueOnExistingBlock()
+    public function testUnblockReturnsTrueOnExistingBlock(): void
     {
         $identifier = new Identity('test_unlock');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
@@ -98,7 +101,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testExistsReturnsFalseOnNonexistingBlock()
+    public function testExistsReturnsFalseOnNonexistingBlock(): void
     {
         $identifier = new Identity('test_isblocked');
 
@@ -107,7 +110,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testIsBlockedReturnsTrueOnExistingBlock()
+    public function testIsBlockedReturnsTrueOnExistingBlock(): void
     {
         $identifier = new Identity('test_isblocked');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
@@ -118,7 +121,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testGetReturnsNullOnNonexistingFile()
+    public function testGetReturnsNullOnNonexistingFile(): void
     {
         $identifier = new Identity('test_isblocked');
 
@@ -127,7 +130,7 @@ class InMemoryStorageTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testGetReturnsBlockOnExistingFile()
+    public function testGetReturnsBlockOnExistingFile(): void
     {
         $identifier = new Identity('test_isblocked');
         $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());

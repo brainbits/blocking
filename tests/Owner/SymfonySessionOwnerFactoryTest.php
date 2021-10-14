@@ -14,6 +14,7 @@ namespace Brainbits\Blocking\Tests\Owner;
 use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\SymfonySessionOwnerFactory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
@@ -21,7 +22,9 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
  */
 class SymfonySessionOwnerFactoryTest extends TestCase
 {
-    public function testToString()
+    use ProphecyTrait;
+
+    public function testToString(): void
     {
         $factory = new SymfonySessionOwnerFactory($this->createSession('foo'));
         $owner = $factory->createOwner();
@@ -29,6 +32,9 @@ class SymfonySessionOwnerFactoryTest extends TestCase
         $this->assertEquals($owner, new Owner('foo'));
     }
 
+    /**
+     * @return SessionInterface|ObjectProphecy
+     */
     private function createSession($sessionId)
     {
         $session = $this->prophesize(SessionInterface::class);

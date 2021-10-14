@@ -19,14 +19,14 @@ use PHPUnit\Framework\TestCase;
  */
 class OwnerTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $owner = new Owner('test_123');
 
         $this->assertInstanceOf(Owner::class, $owner);
     }
 
-    public function testEquals()
+    public function testEquals(): void
     {
         $owner1 = new Owner('foo');
         $owner2 = new Owner('foo');
@@ -37,7 +37,7 @@ class OwnerTest extends TestCase
         $this->assertFalse($owner2->equals($owner3));
     }
 
-    public function testToString()
+    public function testToString(): void
     {
         $owner = new Owner('test_123');
 

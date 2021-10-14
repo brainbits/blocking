@@ -12,6 +12,7 @@
 namespace Brainbits\Blocking\Tests\Storage;
 
 use Brainbits\Blocking\BlockInterface;
+use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Storage\FilesystemStorage;
 use Brainbits\Blocking\Exception\DirectoryNotWritableException;
 use Brainbits\Blocking\Exception\FileNotWritableException;
@@ -21,7 +22,6 @@ use org\bovigo\vfs\vfsStream;
 use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Identity\Identity;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * Filesystem storage test
@@ -39,26 +39,24 @@ class FilesystemStorageTest extends TestCase
     private $root;
 
     /**
-     * @var OwnerInterface|ObjectProphecy
+     * @var OwnerInterface
      */
     private $owner;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         vfsStream::setup('blockDir');
 
         $this->root = vfsStream::url('blockDir');
         $this->storage = new FilesystemStorage($this->root);
 
-        $this->owner = $this->prophesize(OwnerInterface::class);
-        $this->owner->__toString()
-            ->willReturn('dummyOwner');
+        $this->owner = new Owner('dummyOwner');
     }
 
-    public function testWriteSucceedesOnNewFile()
+    public function testWriteSucceedesOnNewFile(): void
     {
         $identifier = new Identity('test_block');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $result = $this->storage->write($block);
 
@@ -66,7 +64,7 @@ class FilesystemStorageTest extends TestCase
         $this->assertTrue(file_exists(vfsStream::url('blockDir/' . $identifier)));
     }
 
-    public function testWriteFailsOnNonExistantDirectoryInNonWritableDirectory()
+    public function testWriteFailsOnNonExistantDirectoryInNonWritableDirectory(): void
     {
         $this->expectException(DirectoryNotWritableException::class);
 
@@ -74,12 +72,12 @@ class FilesystemStorageTest extends TestCase
         $adapter = new FilesystemStorage(vfsStream::url('nonWritableDir/blockDir'));
 
         $identifier = new Identity('test_lock');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $adapter->write($block);
     }
 
-    public function testWriteFailsOnNonWritableDirectory()
+    public function testWriteFailsOnNonWritableDirectory(): void
     {
         $this->expectException(FileNotWritableException::class);
 
@@ -89,15 +87,15 @@ class FilesystemStorageTest extends TestCase
         $adapter = new FilesystemStorage(vfsStream::url('writableDir/nonWritableBlockDir'));
 
         $identifier = new Identity('test_lock');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $adapter->write($block);
     }
 
-    public function testTouchSucceedesOnExistingFile()
+    public function testTouchSucceedesOnExistingFile(): void
     {
         $identifier = new Identity('test_lock');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $this->storage->write($block);
         $result = $this->storage->touch($block);
@@ -106,10 +104,10 @@ class FilesystemStorageTest extends TestCase
         $this->assertTrue(file_exists(vfsStream::url('blockDir/' . $identifier)));
     }
 
-    public function testRemoveReturnsFalseOnNonexistingFile()
+    public function testRemoveReturnsFalseOnNonexistingFile(): void
     {
         $identifier = new Identity('test_unlock');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $result = $this->storage->remove($block);
 
@@ -117,10 +115,10 @@ class FilesystemStorageTest extends TestCase
         $this->assertFalse(file_exists(vfsStream::url('blockDir/' . $identifier)));
     }
 
-    public function testUnblockReturnsTrueOnExistingFile()
+    public function testUnblockReturnsTrueOnExistingFile(): void
     {
         $identifier = new Identity('test_unlock');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $this->storage->write($block);
         $result = $this->storage->remove($block);
@@ -129,7 +127,7 @@ class FilesystemStorageTest extends TestCase
         $this->assertFalse(file_exists(vfsStream::url('blockDir/' . $identifier)));
     }
 
-    public function testExistsReturnsFalseOnNonexistingFile()
+    public function testExistsReturnsFalseOnNonexistingFile(): void
     {
         $identifier = new Identity('test_isblocked');
 
@@ -138,10 +136,10 @@ class FilesystemStorageTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testIsBlockedReturnsTrueOnExistingBlock()
+    public function testIsBlockedReturnsTrueOnExistingBlock(): void
     {
         $identifier = new Identity('test_isblocked');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $this->storage->write($block);
         $result = $this->storage->exists($identifier);
@@ -149,7 +147,7 @@ class FilesystemStorageTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testGetReturnsNullOnNonexistingFile()
+    public function testGetReturnsNullOnNonexistingFile(): void
     {
         $identifier = new Identity('test_isblocked');
 
@@ -158,10 +156,10 @@ class FilesystemStorageTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testGetReturnsBlockOnExistingFile()
+    public function testGetReturnsBlockOnExistingFile(): void
     {
         $identifier = new Identity('test_isblocked');
-        $block = new Block($identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($identifier, $this->owner, new DateTimeImmutable());
 
         $this->storage->write($block);
         $result = $this->storage->get($identifier);

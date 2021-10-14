@@ -21,6 +21,7 @@ use Brainbits\Blocking\Storage\StorageInterface;
 use Brainbits\Blocking\Validator\ValidatorInterface;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 
 /**
@@ -28,6 +29,8 @@ use Prophecy\Prophecy\ObjectProphecy;
  */
 class BlockerTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @var BlockInterface|ObjectProphecy
      */
@@ -45,7 +48,7 @@ class BlockerTest extends TestCase
 
     private $owner;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->owner = new Owner('bar');
 
@@ -62,7 +65,7 @@ class BlockerTest extends TestCase
             ->willReturn(new Owner('baz'));
     }
 
-    public function testBlockReturnsBlockOnNonexistingBlock()
+    public function testBlockReturnsBlockOnNonexistingBlock(): void
     {
         $storage = $this->createNonexistingStorage();
         $storage->write(Argument::type(BlockInterface::class))
@@ -78,7 +81,7 @@ class BlockerTest extends TestCase
         $this->assertInstanceOf(BlockInterface::class, $result);
     }
 
-    public function testBlockReturnsBlockOnExistingAndInvalidBlock()
+    public function testBlockReturnsBlockOnExistingAndInvalidBlock(): void
     {
         $storage = $this->createExistingStorage();
         $storage->remove(Argument::type(BlockInterface::class))
@@ -96,7 +99,7 @@ class BlockerTest extends TestCase
         $this->assertInstanceOf(BlockInterface::class, $result);
     }
 
-    public function testBlockThrowsExceptionOnExistingAndValidAndNonOwnerBlock()
+    public function testBlockThrowsExceptionOnExistingAndValidAndNonOwnerBlock(): void
     {
         $this->expectException(BlockFailedException::class);
 
@@ -117,7 +120,7 @@ class BlockerTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testBlockUpdatesBlockOnExistingAndValidAndOwnedBlock()
+    public function testBlockUpdatesBlockOnExistingAndValidAndOwnedBlock(): void
     {
         $storage = $this->createExistingStorage();
         $storage->touch($this->block)
@@ -136,7 +139,7 @@ class BlockerTest extends TestCase
         $this->assertInstanceOf(BlockInterface::class, $result);
     }
 
-    public function testUnblockReturnsNullOnExistingAndInvalidBlock()
+    public function testUnblockReturnsNullOnExistingAndInvalidBlock(): void
     {
         $storage = $this->createExistingStorage();
         $storage->remove(Argument::type(BlockInterface::class))
@@ -152,7 +155,7 @@ class BlockerTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testUnblockReturnsBlockOnExistingAndValidBlock()
+    public function testUnblockReturnsBlockOnExistingAndValidBlock(): void
     {
         $storage = $this->createExistingStorage();
         $storage->remove(Argument::type(BlockInterface::class))
@@ -168,7 +171,7 @@ class BlockerTest extends TestCase
         $this->assertSame($this->block->reveal(), $result);
     }
 
-    public function testUnblockReturnsNullOnNonexistingBlock()
+    public function testUnblockReturnsNullOnNonexistingBlock(): void
     {
         $storage = $this->createNonexistingStorage();
         $storage->remove()
@@ -184,7 +187,7 @@ class BlockerTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testIsBlockedReturnsFalseOnExistingAndInvalidBlock()
+    public function testIsBlockedReturnsFalseOnExistingAndInvalidBlock(): void
     {
         $storage = $this->createExistingStorage();
         $storage->remove(Argument::type(BlockInterface::class))
@@ -196,7 +199,7 @@ class BlockerTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testIsBlockedReturnsTrueOnExistingAndValidBlock()
+    public function testIsBlockedReturnsTrueOnExistingAndValidBlock(): void
     {
         $blocker = new Blocker(
             $this->createExistingStorage()->reveal(),
@@ -208,7 +211,7 @@ class BlockerTest extends TestCase
         $this->assertTrue($result);
     }
 
-    public function testIsBlockedReturnsFalseOnNonexistingBlock()
+    public function testIsBlockedReturnsFalseOnNonexistingBlock(): void
     {
         $blocker = new Blocker(
             $this->createNonexistingStorage()->reveal(),
@@ -220,7 +223,7 @@ class BlockerTest extends TestCase
         $this->assertFalse($result);
     }
 
-    public function testGetBlockReturnsBlockOnExistingBlock()
+    public function testGetBlockReturnsBlockOnExistingBlock(): void
     {
         $blocker = new Blocker(
             $this->createExistingStorage()->reveal(),
