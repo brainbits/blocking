@@ -14,11 +14,12 @@
         "php": "^7.4|^8.0"
     },
     "require-dev": {
-        "mikey179/vfsstream": "^1.2",
+        "mikey179/vfsstream": "^1.6.10",
         "phpunit/phpunit": "^9.5",
         "symfony/http-foundation": ">=4.4",
         "symfony/security-core": ">=4.4",
-        "phpspec/prophecy-phpunit": "^2.0"
+        "phpspec/prophecy": "^1.14",
+        "phpspec/prophecy-phpunit": "^2.0.1"
     },
     "suggest": {
         "symfony/http-foundation": "If you want to use the SymfonySessionOwnerFactory",
