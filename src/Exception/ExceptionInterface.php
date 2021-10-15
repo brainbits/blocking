@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -13,9 +13,11 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Exception;
 
+use Throwable;
+
 /**
  * Exception interface.
  */
-interface ExceptionInterface extends \Throwable
+interface ExceptionInterface extends Throwable
 {
 }

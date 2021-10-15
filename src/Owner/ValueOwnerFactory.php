@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -18,7 +18,7 @@ namespace Brainbits\Blocking\Owner;
  */
 class ValueOwnerFactory implements OwnerFactoryInterface
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {

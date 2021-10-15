@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -18,7 +18,7 @@ namespace Brainbits\Blocking\Identity;
  */
 class Identity implements IdentityInterface
 {
-    private $identityValue;
+    private string $identityValue;
 
     public function __construct(string $identityValue)
     {

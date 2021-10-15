@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -21,13 +21,26 @@ use Brainbits\Blocking\Exception\UnserializeFailedException;
 use Brainbits\Blocking\Identity\IdentityInterface;
 use DateTimeImmutable;
 
+use function dirname;
+use function file_exists;
+use function file_get_contents;
+use function file_put_contents;
+use function filemtime;
+use function is_writable;
+use function mkdir;
+use function rtrim;
+use function serialize;
+use function touch;
+use function unlink;
+use function unserialize;
+
 /**
  * Filesystem block storage.
  * Uses files for storing block information.
  */
 class FilesystemStorage implements StorageInterface
 {
-    private $root;
+    private string $root;
 
     public function __construct(string $root)
     {
@@ -38,7 +51,7 @@ class FilesystemStorage implements StorageInterface
     {
         $filename = $this->getFilename($block->getIdentity());
 
-        if (false === file_put_contents($filename, serialize($block))) {
+        if (file_put_contents($filename, serialize($block)) === false) {
             throw IOException::createWriteFailed($filename);
         }
 
@@ -49,7 +62,7 @@ class FilesystemStorage implements StorageInterface
     {
         $filename = $this->getFilename($block->getIdentity());
 
-        if (false === touch($filename)) {
+        if (touch($filename) === false) {
             throw IOException::createTouchFailed($filename);
         }
 
@@ -67,7 +80,7 @@ class FilesystemStorage implements StorageInterface
         }
 
         $filename = $this->getFilename($block->getIdentity());
-        if (false === unlink($filename)) {
+        if (unlink($filename) === false) {
             if (file_exists($filename)) {
                 throw IOException::createUnlinkFailed($filename);
             }
@@ -104,7 +117,7 @@ class FilesystemStorage implements StorageInterface
 
     private function getFilename(IdentityInterface $identifier): string
     {
-        return $this->ensureFileIsWritable($this->ensureDirectoryExists($this->root).'/'.$identifier);
+        return $this->ensureFileIsWritable($this->ensureDirectoryExists($this->root) . '/' . $identifier);
     }
 
     private function ensureFileIsWritable(string $file): string

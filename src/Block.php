@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -16,16 +16,17 @@ namespace Brainbits\Blocking;
 use Brainbits\Blocking\Identity\IdentityInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use DateTimeImmutable;
+use DateTimeInterface;
 
 /**
  * Standard block.
  */
 class Block implements BlockInterface
 {
-    private $identifier;
-    private $owner;
-    private $createdAt;
-    private $updatedAt;
+    private IdentityInterface $identifier;
+    private OwnerInterface $owner;
+    private DateTimeInterface $createdAt;
+    private DateTimeInterface $updatedAt;
 
     public function __construct(IdentityInterface $identifier, OwnerInterface $owner, DateTimeImmutable $createdAt)
     {

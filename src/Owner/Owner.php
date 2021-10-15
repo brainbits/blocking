@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -13,12 +13,9 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Owner;
 
-/**
- * Owner.
- */
 class Owner implements OwnerInterface
 {
-    private $ownerValue;
+    private string $ownerValue;
 
     public function __construct(string $ownerValue)
     {

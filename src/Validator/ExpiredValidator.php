@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -23,7 +23,7 @@ use DateTimeImmutable;
  */
 class ExpiredValidator implements ValidatorInterface
 {
-    private $expireSeconds;
+    private int $expireSeconds;
 
     public function __construct(int $expireSeconds)
     {
@@ -43,10 +43,6 @@ class ExpiredValidator implements ValidatorInterface
 
     /**
      * Calculate seconds from interval
-     *
-     * @param DateInterval $interval
-     *
-     * @return int
      */
     private function intervalToSeconds(DateInterval $interval): int
     {
@@ -65,8 +61,7 @@ class ExpiredValidator implements ValidatorInterface
         $seconds += (int) $interval->format('%m') * $multiplier;
 
         $multiplier *= 12;
-        $seconds += (int) $interval->format('%y') * $multiplier;
 
-        return $seconds;
+        return $seconds + (int) $interval->format('%y') * $multiplier;
     }
 }

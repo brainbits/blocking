@@ -44,3 +44,6 @@ jobs:
 
       - name: "Unit tests"
         run: "vendor/bin/phpunit"
+
+      - name: "Coding style"
+        run: "vendor/bin/phpcs --report=summary"

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -15,6 +15,8 @@ namespace Brainbits\Blocking\Exception;
 
 use Brainbits\Blocking\Identity\IdentityInterface;
 
+use function sprintf;
+
 /**
  * Block failed exception.
  */
@@ -22,6 +24,6 @@ class BlockFailedException extends RuntimeException
 {
     public static function createAlreadyBlocked(IdentityInterface $identifier): self
     {
-        return new self("Identifier $identifier is already blocked.");
+        return new self(sprintf('Identifier %s is already blocked.', $identifier));
     }
 }

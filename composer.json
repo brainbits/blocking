@@ -19,7 +19,9 @@
         "symfony/http-foundation": ">=4.4",
         "symfony/security-core": ">=4.4",
         "phpspec/prophecy": "^1.14",
-        "phpspec/prophecy-phpunit": "^2.0.1"
+        "phpspec/prophecy-phpunit": "^2.0.1",
+        "squizlabs/php_codesniffer": "^3.6",
+        "brainbits/phpcs-standard": "^5.0"
     },
     "suggest": {
         "symfony/http-foundation": "If you want to use the SymfonySessionOwnerFactory",

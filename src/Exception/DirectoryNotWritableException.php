@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -13,6 +13,8 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Exception;
 
+use function sprintf;
+
 /**
  * Directory not writable exception.
  */
@@ -20,6 +22,6 @@ class DirectoryNotWritableException extends RuntimeException
 {
     public static function create(string $dirname): self
     {
-        return new self("Directory $dirname not writable.");
+        return new self(sprintf('Directory %s not writable.', $dirname));
     }
 }

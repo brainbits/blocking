@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -20,6 +20,6 @@ class NoTokenFoundException extends RuntimeException
 {
     public static function create(): self
     {
-        return new self("No token found.");
+        return new self('No token found.');
     }
 }
