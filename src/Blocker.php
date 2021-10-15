@@ -56,7 +56,8 @@ class Blocker
 
         if ($this->isBlocked($identifier)) {
             $block = $this->getBlock($identifier);
-            if (!$block->isOwnedBy($owner)) {
+
+            if (!$block || !$block->isOwnedBy($owner)) {
                 return null;
             }
 
@@ -86,13 +87,12 @@ class Blocker
 
     public function isBlocked(IdentityInterface $identifier): bool
     {
-        $exists = $this->storage->exists($identifier);
+        $block = $this->storage->get($identifier);
 
-        if (!$exists) {
+        if (!$block) {
             return false;
         }
 
-        $block = $this->storage->get($identifier);
         $valid = $this->validator->validate($block);
 
         if ($valid) {

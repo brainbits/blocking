@@ -257,6 +257,8 @@ class BlockerTest extends TestCase
         $storage = $this->prophesize(StorageInterface::class);
         $storage->exists(Argument::type(IdentityInterface::class))
             ->willReturn(false);
+        $storage->get(Argument::type(IdentityInterface::class))
+            ->willReturn(null);
 
         return $storage;
     }

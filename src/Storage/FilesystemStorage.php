@@ -68,6 +68,10 @@ class FilesystemStorage implements StorageInterface
 
         $updatedAt = DateTimeImmutable::createFromFormat('U', (string) filemtime($filename));
 
+        if (!$updatedAt) {
+            throw IOException::createTouchFailed($filename);
+        }
+
         $block->touch($updatedAt);
 
         return true;
@@ -104,9 +108,14 @@ class FilesystemStorage implements StorageInterface
 
         $filename = $this->getFilename($identifier);
         $content = file_get_contents($filename);
+
+        if (!$content) {
+            throw UnserializeFailedException::createFromInput($content);
+        }
+
         $updatedAt = DateTimeImmutable::createFromFormat('U', (string) filemtime($filename));
         $block = unserialize($content);
-        if (!$block) {
+        if (!$block instanceof BlockInterface || !$updatedAt) {
             throw UnserializeFailedException::createFromInput($content);
         }
 

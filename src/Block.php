@@ -16,7 +16,6 @@ namespace Brainbits\Blocking;
 use Brainbits\Blocking\Identity\IdentityInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use DateTimeImmutable;
-use DateTimeInterface;
 
 /**
  * Standard block.
@@ -25,8 +24,8 @@ class Block implements BlockInterface
 {
     private IdentityInterface $identifier;
     private OwnerInterface $owner;
-    private DateTimeInterface $createdAt;
-    private DateTimeInterface $updatedAt;
+    private DateTimeImmutable $createdAt;
+    private DateTimeImmutable $updatedAt;
 
     public function __construct(IdentityInterface $identifier, OwnerInterface $owner, DateTimeImmutable $createdAt)
     {

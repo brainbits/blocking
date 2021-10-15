@@ -47,3 +47,6 @@ jobs:
 
       - name: "Coding style"
         run: "vendor/bin/phpcs --report=summary"
+
+      - name: "Static analysis"
+        run: "vendor/bin/phpstan --no-progress"
