@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -22,10 +22,10 @@ use DateTimeImmutable;
  */
 class Block implements BlockInterface
 {
-    private $identifier;
-    private $owner;
-    private $createdAt;
-    private $updatedAt;
+    private IdentityInterface $identifier;
+    private OwnerInterface $owner;
+    private DateTimeImmutable $createdAt;
+    private DateTimeImmutable $updatedAt;
 
     public function __construct(IdentityInterface $identifier, OwnerInterface $owner, DateTimeImmutable $createdAt)
     {

@@ -15,13 +15,16 @@ use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Validator\ExpiredValidator;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Expired validator test
  */
 class ExpiredValidatorTest extends TestCase
 {
-    public function testValidateBlockLastUpdatedThirtySecondsAgo()
+    use ProphecyTrait;
+
+    public function testValidateBlockLastUpdatedThirtySecondsAgo(): void
     {
         $block = $this->prophesize(BlockInterface::class);
         $block->getUpdatedAt()
@@ -37,7 +40,7 @@ class ExpiredValidatorTest extends TestCase
         $this->assertTrue($validator->validate($block->reveal()));
     }
 
-    public function testValidateBlockLastUpdatedOneMinuteAgo()
+    public function testValidateBlockLastUpdatedOneMinuteAgo(): void
     {
         $blockMock = $this->prophesize(BlockInterface::class);
         $blockMock->getUpdatedAt()->willReturn(new DateTimeImmutable('1 minute ago'));
@@ -52,7 +55,7 @@ class ExpiredValidatorTest extends TestCase
         $this->assertTrue($validator->validate($blockMock->reveal()));
     }
 
-    public function testValidateBlockLastUpdatedOneHourAo()
+    public function testValidateBlockLastUpdatedOneHourAo(): void
     {
         $blockMock = $this->prophesize(BlockInterface::class);
         $blockMock->getUpdatedAt()->willReturn(new DateTimeImmutable('1 hour ago'));

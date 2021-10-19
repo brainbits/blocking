@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -13,28 +13,23 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Exception;
 
-use Throwable;
-
 /**
  * Unserialize failed exception.
  */
 final class UnserializeFailedException extends RuntimeException
 {
-    private $input;
+    private string $input;
 
-    public function __construct(string $message, ?int $code, ?Throwable $previous, string $input)
+    private function __construct(string $message, string $input)
     {
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message);
 
         $this->input = $input;
     }
 
-    /**
-     * @param mixed $input
-     */
-    public static function createFromInput($input): self
+    public static function createFromInput(mixed $input): self
     {
-        return new self("Unserialize failed.", null, null, (string) $input);
+        return new self('Unserialize failed.', (string) $input);
     }
 
     public function getInput(): string

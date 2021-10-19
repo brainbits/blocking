@@ -14,13 +14,16 @@ namespace Brainbits\Blocking\Tests\Validator;
 use Brainbits\Blocking\BlockInterface;
 use Brainbits\Blocking\Validator\AlwaysInvalidateValidator;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * Always invalidate validator test
  */
 class AlwaysInvalidateValidatorTest extends TestCase
 {
-    public function testValidateBlockLastUpdatedThirtySecondsAgo()
+    use ProphecyTrait;
+
+    public function testValidateBlockLastUpdatedThirtySecondsAgo(): void
     {
         $blockMock = $this->prophesize(BlockInterface::class);
         $blockMock->getUpdatedAt()->willReturn(new \DateTime('30 seconds ago'));
@@ -35,7 +38,7 @@ class AlwaysInvalidateValidatorTest extends TestCase
         $this->assertFalse($validator->validate($blockMock->reveal()));
     }
 
-    public function testValidateBlockLastUpdatedOneMinuteAgo()
+    public function testValidateBlockLastUpdatedOneMinuteAgo(): void
     {
         $blockMock = $this->prophesize(BlockInterface::class);
         $blockMock->getUpdatedAt()->willReturn(new \DateTime('1 minute ago'));
@@ -50,7 +53,7 @@ class AlwaysInvalidateValidatorTest extends TestCase
         $this->assertFalse($validator->validate($blockMock->reveal()));
     }
 
-    public function testValidateBlockLastUpdatedOneHourAo()
+    public function testValidateBlockLastUpdatedOneHourAo(): void
     {
         $blockMock = $this->prophesize(BlockInterface::class);
         $blockMock->getUpdatedAt()->willReturn(new \DateTime('1 hour ago'));

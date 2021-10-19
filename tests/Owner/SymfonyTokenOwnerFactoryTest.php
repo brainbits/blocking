@@ -16,6 +16,8 @@ use Brainbits\Blocking\Exception\NoUserFoundException;
 use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\SymfonyTokenOwnerFactory;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -25,7 +27,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class SymfonyTokenOwnerFactoryTest extends TestCase
 {
-    public function testCreateOwner()
+    use ProphecyTrait;
+
+    public function testCreateOwner(): void
     {
         $factory = new SymfonyTokenOwnerFactory($this->createTokenStorage('foo'));
         $owner = $factory->createOwner();
@@ -33,7 +37,7 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
         $this->assertEquals($owner, new Owner('foo'));
     }
 
-    public function testE()
+    public function testE(): void
     {
         $this->expectException(NoTokenFoundException::class);
 
@@ -41,7 +45,7 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
         $factory->createOwner();
     }
 
-    public function testE2()
+    public function testE2(): void
     {
         $this->expectException(NoUserFoundException::class);
 
@@ -50,6 +54,9 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
         $factory->createOwner();
     }
 
+    /**
+     * @return TokenStorageInterface|ObjectProphecy
+     */
     private function createTokenStorage(string $username, bool $createToken = true, bool $createUser = true)
     {
         $user = $this->prophesize(UserInterface::class);

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -13,6 +13,8 @@ declare(strict_types = 1);
 
 namespace Brainbits\Blocking\Exception;
 
+use function sprintf;
+
 /**
  * Input/output exception.
  */
@@ -20,16 +22,16 @@ class IOException extends RuntimeException
 {
     public static function createWriteFailed(string $filename): self
     {
-        return new self("Write file $filename failed.");
+        return new self(sprintf('Write file %s failed.', $filename));
     }
 
     public static function createTouchFailed(string $filename): self
     {
-        return new self("Touch file $filename failed.");
+        return new self(sprintf('Touch file %s failed.', $filename));
     }
 
     public static function createUnlinkFailed(string $filename): self
     {
-        return new self("Unlink file $filename failed.");
+        return new self(sprintf('Unlink file %s failed.', $filename));
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -22,8 +22,6 @@ interface BlockableInterface
 {
     /**
      * Return block identifier
-     *
-     * @return IdentityInterface
      */
-    public function getBlockIdentifier();
+    public function getBlockIdentifier(): IdentityInterface;
 }

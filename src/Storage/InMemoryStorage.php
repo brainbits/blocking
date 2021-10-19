@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -23,10 +23,8 @@ use DateTimeImmutable;
  */
 class InMemoryStorage implements StorageInterface
 {
-    /**
-     * @var BlockInterface[]
-     */
-    private $blocks;
+    /** @var BlockInterface[] */
+    private array $blocks;
 
     public function __construct(BlockInterface ...$blocks)
     {

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -16,13 +16,14 @@ namespace Brainbits\Blocking\Owner;
 use Brainbits\Blocking\Exception\NoTokenFoundException;
 use Brainbits\Blocking\Exception\NoUserFoundException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Symfony token owner.
  */
 class SymfonyTokenOwnerFactory implements OwnerFactoryInterface
 {
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
     public function __construct(TokenStorageInterface $tokenStorage)
     {
@@ -37,7 +38,7 @@ class SymfonyTokenOwnerFactory implements OwnerFactoryInterface
         }
 
         $user = $token->getUser();
-        if (!$user) {
+        if (!$user instanceof UserInterface) {
             throw NoUserFoundException::create();
         }
 

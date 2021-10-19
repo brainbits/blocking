@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the brainbits blocking package.
@@ -25,12 +25,15 @@ use DateTimeImmutable;
  */
 class Blocker
 {
-    private $storage;
-    private $ownerFactory;
-    private $validator;
+    private StorageInterface $storage;
+    private OwnerFactoryInterface $ownerFactory;
+    private ValidatorInterface $validator;
 
-    public function __construct(StorageInterface $adapter, OwnerFactoryInterface $ownerFactory, ValidatorInterface $validator)
-    {
+    public function __construct(
+        StorageInterface $adapter,
+        OwnerFactoryInterface $ownerFactory,
+        ValidatorInterface $validator
+    ) {
         $this->storage = $adapter;
         $this->ownerFactory = $ownerFactory;
         $this->validator = $validator;
@@ -53,9 +56,11 @@ class Blocker
 
         if ($this->isBlocked($identifier)) {
             $block = $this->getBlock($identifier);
-            if (!$block->isOwnedBy($owner)) {
+
+            if (!$block || !$block->isOwnedBy($owner)) {
                 return null;
             }
+
             $this->storage->touch($block);
 
             return $block;
@@ -71,7 +76,7 @@ class Blocker
     public function unblock(IdentityInterface $identifier): ?BlockInterface
     {
         $block = $this->getBlock($identifier);
-        if (null === $block) {
+        if ($block === null) {
             return null;
         }
 
@@ -82,13 +87,12 @@ class Blocker
 
     public function isBlocked(IdentityInterface $identifier): bool
     {
-        $exists = $this->storage->exists($identifier);
+        $block = $this->storage->get($identifier);
 
-        if (!$exists) {
+        if (!$block) {
             return false;
         }
 
-        $block = $this->storage->get($identifier);
         $valid = $this->validator->validate($block);
 
         if ($valid) {

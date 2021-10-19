@@ -19,14 +19,14 @@ use PHPUnit\Framework\TestCase;
  */
 class IdentifierTest extends TestCase
 {
-    public function testConstruct()
+    public function testConstruct(): void
     {
         $identifier = new Identity('test_123');
 
         $this->assertInstanceOf(Identity::class, $identifier);
     }
 
-    public function testEquals()
+    public function testEquals(): void
     {
         $identifier1 = new Identity('foo');
         $identifier2 = new Identity('foo');
@@ -37,7 +37,7 @@ class IdentifierTest extends TestCase
         $this->assertFalse($identifier2->equals($identifier3));
     }
 
-    public function testToString()
+    public function testToString(): void
     {
         $identifier = new Identity('test_123');
 

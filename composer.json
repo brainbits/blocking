@@ -11,17 +11,25 @@
         }
     ],
     "require": {
-        "php": "^7.1"
+        "php": "^7.4|^8.0"
     },
     "require-dev": {
-        "mikey179/vfsstream": "^1.2",
-        "phpunit/phpunit": "^6.0",
-        "symfony/http-foundation": "^2.8|^3.0",
-        "symfony/security-core": "^2.8|^3.0"
+        "mikey179/vfsstream": "^1.6.10",
+        "phpunit/phpunit": "^9.5",
+        "symfony/http-foundation": ">=4.4",
+        "symfony/security-core": ">=4.4",
+        "phpspec/prophecy-phpunit": "^2.0.1",
+        "squizlabs/php_codesniffer": "^3.6",
+        "brainbits/phpcs-standard": "^5.0",
+        "phpstan/phpstan": "^0.12.99",
+        "brainbits/phpstan-rules": "^2.0"
     },
     "suggest": {
         "symfony/http-foundation": "If you want to use the SymfonySessionOwnerFactory",
         "symfony/security-core": "If you want to use the SymfonyTokenOwnerFactory"
+    },
+    "conflict": {
+        "phpspec/prophecy": "1.12.*"
     },
     "autoload": {
         "psr-4": { "Brainbits\\Blocking\\": "src/" }
