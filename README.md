@@ -3,9 +3,8 @@ Blocking Component
 
 [![Latest Version](https://img.shields.io/github/release/brainbits/blocking.svg?style=flat-square)](https://github.com/brainbits/blocking/releases)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/brainbits/blocking.svg?style=flat-square)](https://scrutinizer-ci.com/g/brainbits/blocking/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/brainbits/blocking.svg?style=flat-square)](https://scrutinizer-ci.com/g/brainbits/blocking)
 [![Total Downloads](https://img.shields.io/packagist/dt/brainbits/blocking.svg?style=flat-square)](https://packagist.org/packages/brainbits/blocking)
+[![Tests](https://github.com/brainbits/blocking/actions/workflows/test.yml/badge.svg)](https://github.com/brainbits/blocking/actions)
 
 The Blocking Component provides methods to manage content based blocking.
 
