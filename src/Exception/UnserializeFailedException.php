@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Exception;
 
+use function gettype;
+use function is_scalar;
+
 /**
  * Unserialize failed exception.
  */
@@ -29,7 +32,7 @@ final class UnserializeFailedException extends RuntimeException
 
     public static function createFromInput(mixed $input): self
     {
-        return new self('Unserialize failed.', (string) $input);
+        return new self('Unserialize failed.', is_scalar($input) ? (string) $input : gettype($input));
     }
 
     public function getInput(): string

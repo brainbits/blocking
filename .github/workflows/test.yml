@@ -16,7 +16,6 @@ jobs:
       matrix:
         dependencies: ["lowest", "highest"]
         php-version:
-          - "7.4"
           - "8.0"
           - "8.1"
         operating-system: ["ubuntu-latest"]

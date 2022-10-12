@@ -60,7 +60,7 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
     private function createTokenStorage(string $username, bool $createToken = true, bool $createUser = true)
     {
         $user = $this->prophesize(UserInterface::class);
-        $user->getUsername()
+        $user->getUserIdentifier()
             ->willReturn($username);
 
         $token = $this->prophesize(TokenInterface::class);
