@@ -11,18 +11,18 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0"
+        "php": "^8.0"
     },
     "require-dev": {
         "mikey179/vfsstream": "^1.6.10",
         "phpunit/phpunit": "^9.5",
-        "symfony/http-foundation": ">=4.4",
-        "symfony/security-core": ">=4.4",
+        "symfony/http-foundation": "^5.4|^6.0",
+        "symfony/security-core": "^5.4|^6.0",
         "phpspec/prophecy-phpunit": "^2.0.1",
         "squizlabs/php_codesniffer": "^3.6",
         "brainbits/phpcs-standard": "^5.0",
-        "phpstan/phpstan": "^0.12.99",
-        "brainbits/phpstan-rules": "^2.0"
+        "phpstan/phpstan": "^1.0",
+        "brainbits/phpstan-rules": "^3.0"
     },
     "suggest": {
         "symfony/http-foundation": "If you want to use the SymfonySessionOwnerFactory",
@@ -37,6 +37,11 @@
     "extra": {
         "branch-alias": {
             "dev-master": "4.0-dev"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }

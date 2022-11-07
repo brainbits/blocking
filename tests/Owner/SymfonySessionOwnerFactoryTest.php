@@ -15,6 +15,8 @@ use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\SymfonySessionOwnerFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
@@ -26,7 +28,14 @@ class SymfonySessionOwnerFactoryTest extends TestCase
 
     public function testToString(): void
     {
-        $factory = new SymfonySessionOwnerFactory($this->createSession('foo'));
+        $request = new Request();
+        $request->setSession($this->createSession('foo'));
+
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
+
+        $factory = new SymfonySessionOwnerFactory($requestStack);
+
         $owner = $factory->createOwner();
 
         $this->assertEquals($owner, new Owner('foo'));

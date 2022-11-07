@@ -42,6 +42,6 @@ class SymfonyTokenOwnerFactory implements OwnerFactoryInterface
             throw NoUserFoundException::create();
         }
 
-        return new Owner($user->getUsername());
+        return new Owner($user->getUserIdentifier());
     }
 }

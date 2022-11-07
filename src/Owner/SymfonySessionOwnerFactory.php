@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Owner;
 
+use Brainbits\Blocking\Exception\NoSessionException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
@@ -20,15 +23,25 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
  */
 class SymfonySessionOwnerFactory implements OwnerFactoryInterface
 {
-    private SessionInterface $session;
+    private RequestStack $requestStack;
 
-    public function __construct(SessionInterface $session)
+    public function __construct(RequestStack $requestStack)
     {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
     }
 
     public function createOwner(): OwnerInterface
     {
-        return new Owner($this->session->getId());
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request instanceof Request) {
+            throw NoSessionException::create();
+        }
+
+        $session = $request->getSession();
+        if (!$session instanceof SessionInterface) {
+            throw NoSessionException::create();
+        }
+
+        return new Owner($session->getId());
     }
 }
