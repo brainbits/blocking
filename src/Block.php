@@ -22,16 +22,13 @@ use DateTimeImmutable;
  */
 class Block implements BlockInterface
 {
-    private IdentityInterface $identifier;
-    private OwnerInterface $owner;
-    private DateTimeImmutable $createdAt;
     private DateTimeImmutable $updatedAt;
 
-    public function __construct(IdentityInterface $identifier, OwnerInterface $owner, DateTimeImmutable $createdAt)
-    {
-        $this->identifier = $identifier;
-        $this->owner = $owner;
-        $this->createdAt = $createdAt;
+    public function __construct(
+        private IdentityInterface $identifier,
+        private OwnerInterface $owner,
+        private DateTimeImmutable $createdAt,
+    ) {
         $this->updatedAt = $createdAt;
     }
 

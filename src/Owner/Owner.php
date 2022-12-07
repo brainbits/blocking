@@ -15,11 +15,8 @@ namespace Brainbits\Blocking\Owner;
 
 class Owner implements OwnerInterface
 {
-    private string $ownerValue;
-
-    public function __construct(string $ownerValue)
+    public function __construct(private string $ownerValue)
     {
-        $this->ownerValue = $ownerValue;
     }
 
     public function equals(OwnerInterface $owner): bool

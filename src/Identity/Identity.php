@@ -18,11 +18,8 @@ namespace Brainbits\Blocking\Identity;
  */
 class Identity implements IdentityInterface
 {
-    private string $identityValue;
-
-    public function __construct(string $identityValue)
+    public function __construct(private string $identityValue)
     {
-        $this->identityValue = $identityValue;
     }
 
     public function equals(IdentityInterface $identifier): bool
