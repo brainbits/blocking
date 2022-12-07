@@ -100,7 +100,7 @@ class FilesystemStorage implements StorageInterface
         return file_exists($filename);
     }
 
-    public function get(IdentityInterface $identifier): ?BlockInterface
+    public function get(IdentityInterface $identifier): BlockInterface|null
     {
         if (!$this->exists($identifier)) {
             return null;

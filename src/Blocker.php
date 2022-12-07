@@ -26,17 +26,13 @@ use DateTimeImmutable;
 class Blocker
 {
     private StorageInterface $storage;
-    private OwnerFactoryInterface $ownerFactory;
-    private ValidatorInterface $validator;
 
     public function __construct(
         StorageInterface $adapter,
-        OwnerFactoryInterface $ownerFactory,
-        ValidatorInterface $validator
+        private OwnerFactoryInterface $ownerFactory,
+        private ValidatorInterface $validator,
     ) {
         $this->storage = $adapter;
-        $this->ownerFactory = $ownerFactory;
-        $this->validator = $validator;
     }
 
     public function block(IdentityInterface $identifier): BlockInterface
@@ -50,7 +46,7 @@ class Blocker
         return $block;
     }
 
-    public function tryBlock(IdentityInterface $identifier): ?BlockInterface
+    public function tryBlock(IdentityInterface $identifier): BlockInterface|null
     {
         $owner = $this->ownerFactory->createOwner();
 
@@ -73,7 +69,7 @@ class Blocker
         return $block;
     }
 
-    public function unblock(IdentityInterface $identifier): ?BlockInterface
+    public function unblock(IdentityInterface $identifier): BlockInterface|null
     {
         $block = $this->getBlock($identifier);
         if ($block === null) {
@@ -104,7 +100,7 @@ class Blocker
         return false;
     }
 
-    public function getBlock(IdentityInterface $identifier): ?BlockInterface
+    public function getBlock(IdentityInterface $identifier): BlockInterface|null
     {
         if (!$this->isBlocked($identifier)) {
             return null;

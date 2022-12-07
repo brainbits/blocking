@@ -63,7 +63,7 @@ class InMemoryStorage implements StorageInterface
         return isset($this->blocks[(string) $identifier]);
     }
 
-    public function get(IdentityInterface $identifier): ?BlockInterface
+    public function get(IdentityInterface $identifier): BlockInterface|null
     {
         if (!$this->exists($identifier)) {
             return null;

@@ -21,13 +21,9 @@ use function is_scalar;
  */
 final class UnserializeFailedException extends RuntimeException
 {
-    private string $input;
-
-    private function __construct(string $message, string $input)
+    private function __construct(string $message, private string $input)
     {
         parent::__construct($message);
-
-        $this->input = $input;
     }
 
     public static function createFromInput(mixed $input): self

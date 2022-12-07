@@ -23,11 +23,8 @@ use DateTimeImmutable;
  */
 class ExpiredValidator implements ValidatorInterface
 {
-    private int $expireSeconds;
-
-    public function __construct(int $expireSeconds)
+    public function __construct(private int $expireSeconds)
     {
-        $this->expireSeconds = $expireSeconds;
     }
 
     public function validate(BlockInterface $block): bool

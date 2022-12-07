@@ -23,11 +23,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
  */
 class SymfonySessionOwnerFactory implements OwnerFactoryInterface
 {
-    private RequestStack $requestStack;
-
-    public function __construct(RequestStack $requestStack)
+    public function __construct(private RequestStack $requestStack)
     {
-        $this->requestStack = $requestStack;
     }
 
     public function createOwner(): OwnerInterface

@@ -23,11 +23,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class SymfonyTokenOwnerFactory implements OwnerFactoryInterface
 {
-    private TokenStorageInterface $tokenStorage;
-
-    public function __construct(TokenStorageInterface $tokenStorage)
+    public function __construct(private TokenStorageInterface $tokenStorage)
     {
-        $this->tokenStorage = $tokenStorage;
     }
 
     public function createOwner(): OwnerInterface

@@ -29,5 +29,5 @@ interface StorageInterface
 
     public function exists(IdentityInterface $identifier): bool;
 
-    public function get(IdentityInterface $identifier): ?BlockInterface;
+    public function get(IdentityInterface $identifier): BlockInterface|null;
 }
