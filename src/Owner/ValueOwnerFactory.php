@@ -26,4 +26,9 @@ class ValueOwnerFactory implements OwnerFactoryInterface
     {
         return new Owner($this->value);
     }
+
+    public function setValue(string $value): void
+    {
+        $this->value = $value;
+    }
 }
