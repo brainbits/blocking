@@ -15,86 +15,86 @@ use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Identity\IdentityInterface;
 use Brainbits\Blocking\Owner\OwnerInterface;
 use DateTimeImmutable;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 
-/**
- * Block test
- */
 class BlockTest extends TestCase
 {
-    use ProphecyTrait;
-
     /**
-     * @var IdentityInterface|ObjectProphecy
+     * @var IdentityInterface|MockObject
      */
     private $identifier;
 
     /**
-     * @var OwnerInterface|ObjectProphecy
+     * @var OwnerInterface|MockObject
      */
     private $owner;
 
     protected function setUp(): void
     {
-        $this->identifier = $this->prophesize(IdentityInterface::class)->reveal();
+        $this->identifier = $this->createMock(IdentityInterface::class);
 
-        $this->owner = $this->prophesize(OwnerInterface::class);
-        $this->owner->__toString()
+        $this->owner = $this->createMock(OwnerInterface::class);
+        $this->owner->expects($this->any())
+            ->method('__toString')
             ->willReturn('dummyOwner');
     }
 
     public function testConstruct(): void
     {
-        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($this->identifier, $this->owner, new DateTimeImmutable());
 
         $this->assertInstanceOf(Block::class, $block);
     }
 
     public function testGetIdentifierReturnsCorrectValue(): void
     {
-        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($this->identifier, $this->owner, new DateTimeImmutable());
 
         $this->assertSame($this->identifier, $block->getIdentity());
     }
 
     public function testGetOwnerReturnsCorrectValue(): void
     {
-        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($this->identifier, $this->owner, new DateTimeImmutable());
 
-        $this->assertSame($this->owner->reveal(), $block->getOwner());
+        $this->assertSame($this->owner, $block->getOwner());
     }
 
     public function testIsOwnedByReturnsTrue(): void
     {
-        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($this->identifier, $this->owner, new DateTimeImmutable());
 
-        $this->owner->equals($this->owner->reveal())
+        $this->owner->expects($this->once())
+            ->method('equals')
+            ->with($this->owner)
             ->willReturn(true);
 
-        $this->assertTrue($block->isOwnedBy($this->owner->reveal()));
+        $this->assertTrue($block->isOwnedBy($this->owner));
     }
 
     public function testIsOwnedByReturnsFalse(): void
     {
-        $block = new Block($this->identifier, $this->owner->reveal(), new DateTimeImmutable());
+        $block = new Block($this->identifier, $this->owner, new DateTimeImmutable());
 
-        $owner = $this->prophesize(OwnerInterface::class);
-        $owner->__toString()
+        $owner = $this->createMock(OwnerInterface::class);
+        $this->owner->expects($this->any())
+            ->method('__toString')
             ->willReturn('dummyOwner');
 
-        $this->owner->equals($owner->reveal())
-           ->willReturn(false);
+        $this->owner->expects($this->once())
+            ->method('equals')
+            ->with($owner)
+            ->willReturn(false);
 
-        $this->assertFalse($block->isOwnedBy($owner->reveal()));
+        $this->assertFalse($block->isOwnedBy($owner));
     }
 
     public function testGetCreatedAtReturnsCorrectValue(): void
     {
         $createdAt = new DateTimeImmutable();
 
-        $block = new Block($this->identifier, $this->owner->reveal(), $createdAt);
+        $block = new Block($this->identifier, $this->owner, $createdAt);
         $result = $block->getCreatedAt();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $result);
@@ -105,7 +105,7 @@ class BlockTest extends TestCase
     {
         $createdAt = new DateTimeImmutable();
 
-        $block = new Block($this->identifier, $this->owner->reveal(), $createdAt);
+        $block = new Block($this->identifier, $this->owner, $createdAt);
         $result = $block->getUpdatedAt();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $result);
@@ -116,7 +116,7 @@ class BlockTest extends TestCase
     {
         $createdAt = new DateTimeImmutable();
 
-        $block = new Block($this->identifier, $this->owner->reveal(), $createdAt);
+        $block = new Block($this->identifier, $this->owner, $createdAt);
 
         $updatedAt = new DateTimeImmutable();
 

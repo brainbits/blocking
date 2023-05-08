@@ -13,19 +13,14 @@ namespace Brainbits\Blocking\Tests\Owner;
 
 use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\SymfonySessionOwnerFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-/**
- * Symfony session owner test
- */
 class SymfonySessionOwnerFactoryTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testToString(): void
     {
         $request = new Request();
@@ -42,14 +37,15 @@ class SymfonySessionOwnerFactoryTest extends TestCase
     }
 
     /**
-     * @return SessionInterface|ObjectProphecy
+     * @return SessionInterface|MockObject
      */
     private function createSession($sessionId)
     {
-        $session = $this->prophesize(SessionInterface::class);
-        $session->getId()
+        $session = $this->createMock(SessionInterface::class);
+        $session->expects($this->once())
+            ->method('getId')
             ->willReturn($sessionId);
 
-        return $session->reveal();
+        return $session;
     }
 }

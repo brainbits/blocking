@@ -15,9 +15,8 @@ use Brainbits\Blocking\Exception\NoTokenFoundException;
 use Brainbits\Blocking\Exception\NoUserFoundException;
 use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\SymfonyTokenOwnerFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -27,8 +26,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class SymfonyTokenOwnerFactoryTest extends TestCase
 {
-    use ProphecyTrait;
-
     public function testCreateOwner(): void
     {
         $factory = new SymfonyTokenOwnerFactory($this->createTokenStorage('foo'));
@@ -55,26 +52,29 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
     }
 
     /**
-     * @return TokenStorageInterface|ObjectProphecy
+     * @return TokenStorageInterface|MockObject
      */
     private function createTokenStorage(string $username, bool $createToken = true, bool $createUser = true)
     {
-        $user = $this->prophesize(UserInterface::class);
-        $user->getUserIdentifier()
+        $user = $this->createMock(UserInterface::class);
+        $user->expects($this->any())
+            ->method('getUserIdentifier')
             ->willReturn($username);
 
-        $token = $this->prophesize(TokenInterface::class);
+        $token = $this->createMock(TokenInterface::class);
         if ($createUser && $createToken) {
-            $token->getUser()
-                ->willReturn($user->reveal());
+            $token->expects($this->once())
+                ->method('getUser')
+                ->willReturn($user);
         }
 
-        $storage = $this->prophesize(TokenStorageInterface::class);
+        $storage = $this->createMock(TokenStorageInterface::class);
         if ($createToken) {
-            $storage->getToken()
-                ->willReturn($token->reveal());
+            $storage->expects($this->once())
+                ->method('getToken')
+                ->willReturn($token);
         }
 
-        return $storage->reveal();
+        return $storage;
     }
 }
