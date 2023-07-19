@@ -1,0 +1,8 @@
+
+brainbits_blocking_block:
+    path: /blocking/block/{identifier}
+    controller: brainbits_blocking.controller::blockAction
+
+brainbits_blocking_unblock:
+    path: /blocking/unblock/{identifier}
+    controller: brainbits_blocking.controller::unblockAction

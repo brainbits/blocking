@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Validator;
 
-use Brainbits\Blocking\BlockInterface;
+use Brainbits\Blocking\Block;
 
 /**
  * Block validator interface.
@@ -25,5 +25,5 @@ interface ValidatorInterface
      * Validate block.
      * Return true if an existing block is valid, false if invalid.
      */
-    public function validate(BlockInterface $block): bool;
+    public function validate(Block $block): bool;
 }

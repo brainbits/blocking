@@ -15,9 +15,6 @@ namespace Brainbits\Blocking\Exception;
 
 use Throwable;
 
-/**
- * Exception interface.
- */
 interface ExceptionInterface extends Throwable
 {
 }

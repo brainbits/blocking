@@ -15,23 +15,25 @@ namespace Brainbits\Blocking\Exception;
 
 use function sprintf;
 
-/**
- * Input/output exception.
- */
 class IOException extends RuntimeException
 {
-    public static function createWriteFailed(string $filename): self
+    public static function getFailed(string $identifier): self
     {
-        return new self(sprintf('Write file %s failed.', $filename));
+        return new self(sprintf('Get %s failed.', $identifier));
     }
 
-    public static function createTouchFailed(string $filename): self
+    public static function writeFailed(string $identifier): self
     {
-        return new self(sprintf('Touch file %s failed.', $filename));
+        return new self(sprintf('Write %s failed.', $identifier));
     }
 
-    public static function createUnlinkFailed(string $filename): self
+    public static function touchFailed(string $identifier): self
     {
-        return new self(sprintf('Unlink file %s failed.', $filename));
+        return new self(sprintf('Touch %s failed.', $identifier));
+    }
+
+    public static function removeFailed(string $identifier): self
+    {
+        return new self(sprintf('Unlink %s failed.', $identifier));
     }
 }

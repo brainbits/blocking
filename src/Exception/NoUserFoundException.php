@@ -13,9 +13,6 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Exception;
 
-/**
- * No user found exception.
- */
 class NoUserFoundException extends RuntimeException
 {
     public static function create(): self

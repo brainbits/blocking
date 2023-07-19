@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -15,10 +17,7 @@ use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\ValueOwnerFactory;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Value owner test
- */
-class ValueOwnerFactoryTest extends TestCase
+final class ValueOwnerFactoryTest extends TestCase
 {
     public function testCreate(): void
     {

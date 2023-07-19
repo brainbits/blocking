@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -14,10 +16,7 @@ namespace Brainbits\Blocking\Tests\Owner;
 use Brainbits\Blocking\Owner\Owner;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Owner test
- */
-class OwnerTest extends TestCase
+final class OwnerTest extends TestCase
 {
     public function testConstruct(): void
     {

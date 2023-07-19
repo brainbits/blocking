@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -11,61 +13,19 @@
 
 namespace Brainbits\Blocking\Tests\Validator;
 
-use Brainbits\Blocking\BlockInterface;
+use Brainbits\Blocking\Block;
+use Brainbits\Blocking\Identity\BlockIdentity;
+use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Validator\AlwaysInvalidateValidator;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-class AlwaysInvalidateValidatorTest extends TestCase
+final class AlwaysInvalidateValidatorTest extends TestCase
 {
-    public function testValidateBlockLastUpdatedThirtySecondsAgo(): void
+    public function testValidateBlock(): void
     {
-        $blockMock = $this->createMock(BlockInterface::class);
-        $blockMock->expects($this->any())
-            ->method('getUpdatedAt')
-            ->willReturn(new DateTimeImmutable('30 seconds ago'));
+        $block = new Block(new BlockIdentity('foo'), new Owner('bar'));
 
-        $validator = new AlwaysInvalidateValidator(20);
-        $this->assertFalse($validator->validate($blockMock));
-
-        $validator = new AlwaysInvalidateValidator(30);
-        $this->assertFalse($validator->validate($blockMock));
-
-        $validator = new AlwaysInvalidateValidator(60);
-        $this->assertFalse($validator->validate($blockMock));
-    }
-
-    public function testValidateBlockLastUpdatedOneMinuteAgo(): void
-    {
-        $blockMock = $this->createMock(BlockInterface::class);
-        $blockMock->expects($this->any())
-            ->method('getUpdatedAt')
-            ->willReturn(new DateTimeImmutable('1 minute ago'));
-
-        $validator = new AlwaysInvalidateValidator(30);
-        $this->assertFalse($validator->validate($blockMock));
-
-        $validator = new AlwaysInvalidateValidator(60);
-        $this->assertFalse($validator->validate($blockMock));
-
-        $validator = new AlwaysInvalidateValidator(90);
-        $this->assertFalse($validator->validate($blockMock));
-    }
-
-    public function testValidateBlockLastUpdatedOneHourAo(): void
-    {
-        $blockMock = $this->createMock(BlockInterface::class);
-        $blockMock->expects($this->any())
-            ->method('getUpdatedAt')
-            ->willReturn(new DateTimeImmutable('1 hour ago'));
-
-        $validator = new AlwaysInvalidateValidator(1800);
-        $this->assertFalse($validator->validate($blockMock));
-
-        $validator = new AlwaysInvalidateValidator(3600);
-        $this->assertFalse($validator->validate($blockMock));
-
-        $validator = new AlwaysInvalidateValidator(5400);
-        $this->assertFalse($validator->validate($blockMock));
+        $validator = new AlwaysInvalidateValidator();
+        $this->assertFalse($validator->validate($block));
     }
 }

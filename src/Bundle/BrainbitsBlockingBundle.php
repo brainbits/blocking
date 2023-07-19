@@ -11,14 +11,10 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Brainbits\Blocking\Identity;
+namespace Brainbits\Blocking\Bundle;
 
-/**
- * Block identity interface.
- */
-interface IdentityInterface
+use Symfony\Component\HttpKernel\Bundle\Bundle;
+
+final class BrainbitsBlockingBundle extends Bundle
 {
-    public function equals(IdentityInterface $identifier): bool;
-
-    public function __toString(): string;
 }

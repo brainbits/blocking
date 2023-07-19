@@ -13,21 +13,21 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Storage;
 
-use Brainbits\Blocking\BlockInterface;
-use Brainbits\Blocking\Identity\IdentityInterface;
+use Brainbits\Blocking\Block;
+use Brainbits\Blocking\Identity\BlockIdentity;
 
 /**
  * Block storage interface.
  */
 interface StorageInterface
 {
-    public function write(BlockInterface $block): bool;
+    public function write(Block $block, int $ttl): bool;
 
-    public function touch(BlockInterface $block): bool;
+    public function touch(Block $block): bool;
 
-    public function remove(BlockInterface $block): bool;
+    public function remove(Block $block): bool;
 
-    public function exists(IdentityInterface $identifier): bool;
+    public function exists(BlockIdentity $identity): bool;
 
-    public function get(IdentityInterface $identifier): BlockInterface|null;
+    public function get(BlockIdentity $identity): Block|null;
 }

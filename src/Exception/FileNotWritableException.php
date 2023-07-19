@@ -15,9 +15,6 @@ namespace Brainbits\Blocking\Exception;
 
 use function sprintf;
 
-/**
- * File not writable exception.
- */
 class FileNotWritableException extends RuntimeException
 {
     public static function create(string $filename): self

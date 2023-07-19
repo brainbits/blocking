@@ -18,16 +18,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-/**
- * Symfony session owner factory.
- */
-class SymfonySessionOwnerFactory implements OwnerFactoryInterface
+final readonly class SymfonySessionOwnerFactory implements OwnerFactoryInterface
 {
     public function __construct(private RequestStack $requestStack)
     {
     }
 
-    public function createOwner(): OwnerInterface
+    public function createOwner(): Owner
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request instanceof Request) {

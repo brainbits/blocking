@@ -15,9 +15,6 @@ namespace Brainbits\Blocking\Exception;
 
 use function sprintf;
 
-/**
- * Directory not writable exception.
- */
 class DirectoryNotWritableException extends RuntimeException
 {
     public static function create(string $dirname): self

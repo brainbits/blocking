@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -11,26 +13,23 @@
 
 namespace Brainbits\Blocking\Tests\Identifier;
 
-use Brainbits\Blocking\Identity\Identity;
+use Brainbits\Blocking\Identity\BlockIdentity;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Identifier test
- */
-class IdentifierTest extends TestCase
+final class BlockIdentifierTest extends TestCase
 {
     public function testConstruct(): void
     {
-        $identifier = new Identity('test_123');
+        $identifier = new BlockIdentity('test_123');
 
-        $this->assertInstanceOf(Identity::class, $identifier);
+        $this->assertInstanceOf(BlockIdentity::class, $identifier);
     }
 
     public function testEquals(): void
     {
-        $identifier1 = new Identity('foo');
-        $identifier2 = new Identity('foo');
-        $identifier3 = new Identity('bar');
+        $identifier1 = new BlockIdentity('foo');
+        $identifier2 = new BlockIdentity('foo');
+        $identifier3 = new BlockIdentity('bar');
 
         $this->assertTrue($identifier1->equals($identifier2));
         $this->assertFalse($identifier1->equals($identifier3));
@@ -39,7 +38,7 @@ class IdentifierTest extends TestCase
 
     public function testToString(): void
     {
-        $identifier = new Identity('test_123');
+        $identifier = new BlockIdentity('test_123');
 
         $this->assertEquals('test_123', $identifier);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -19,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
-class SymfonySessionOwnerFactoryTest extends TestCase
+final class SymfonySessionOwnerFactoryTest extends TestCase
 {
     public function testToString(): void
     {
@@ -36,10 +38,7 @@ class SymfonySessionOwnerFactoryTest extends TestCase
         $this->assertEquals($owner, new Owner('foo'));
     }
 
-    /**
-     * @return SessionInterface|MockObject
-     */
-    private function createSession($sessionId)
+    private function createSession(string $sessionId): SessionInterface|MockObject
     {
         $session = $this->createMock(SessionInterface::class);
         $session->expects($this->once())

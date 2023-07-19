@@ -13,10 +13,7 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Owner;
 
-/**
- * Block owner factory interface.
- */
 interface OwnerFactoryInterface
 {
-    public function createOwner(): OwnerInterface;
+    public function createOwner(): Owner;
 }

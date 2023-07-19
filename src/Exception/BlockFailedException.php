@@ -13,17 +13,14 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Exception;
 
-use Brainbits\Blocking\Identity\IdentityInterface;
+use Brainbits\Blocking\Identity\BlockIdentity;
 
 use function sprintf;
 
-/**
- * Block failed exception.
- */
 class BlockFailedException extends RuntimeException
 {
-    public static function createAlreadyBlocked(IdentityInterface $identifier): self
+    public static function createAlreadyBlocked(BlockIdentity $identity): self
     {
-        return new self(sprintf('Identifier %s is already blocked.', $identifier));
+        return new self(sprintf('Identifier %s is already blocked.', $identity));
     }
 }
