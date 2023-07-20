@@ -30,7 +30,6 @@ class Configuration implements ConfigurationInterface
 
         $storageDrivers = ['filesystem', 'predis', 'in_memory', 'custom'];
         $ownerFactoryDrivers = ['symfony_session', 'symfony_token', 'value', 'custom'];
-        $validatorDrivers = ['expired', 'always_invalidate', 'custom'];
 
         $rootNode
             ->beforeNormalization()
@@ -86,24 +85,6 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('value')->end()
                     ->end()
                 ->end()
-                ->arrayNode('validator')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('driver')
-                            ->validate()
-                                ->ifNotInArray($validatorDrivers)
-                                ->thenInvalid(
-                                    'The validator driver %s is not supported. Please choose one of ' .
-                                    json_encode($validatorDrivers),
-                                )
-                            ->end()
-                            ->defaultValue('expired')
-                            ->cannotBeEmpty()
-                        ->end()
-                        ->scalarNode('service')->end()
-                        ->integerNode('expiration_time')->defaultValue(300)->end()
-                    ->end()
-                ->end()
             ->end()
             ->validate()
                 ->ifTrue(static function ($v) {
@@ -117,14 +98,6 @@ class Configuration implements ConfigurationInterface
                 })
                 ->thenInvalid(
                     'You need to specify your own owner_factory service when using the "custom" owner_factory driver.',
-                )
-            ->end()
-            ->validate()
-                ->ifTrue(static function ($v) {
-                    return $v['validator']['driver'] === 'custom' && empty($v['validator']['service']);
-                })
-                ->thenInvalid(
-                    'You need to specify your own validator service when using the "custom" validator driver.',
                 )
             ->end();
 

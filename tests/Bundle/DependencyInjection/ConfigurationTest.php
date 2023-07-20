@@ -50,10 +50,6 @@ final class ConfigurationTest extends TestCase
                     'prefix' => 'block',
                 ],
                 'owner_factory' => ['driver' => 'symfony_session'],
-                'validator' => [
-                    'driver' => 'expired',
-                    'expiration_time' => 300,
-                ],
                 'block_interval' => 30,
             ],
         );
@@ -74,10 +70,6 @@ final class ConfigurationTest extends TestCase
                         'driver' => 'value',
                         'value' => 'bar',
                     ],
-                    'validator' => [
-                        'driver' => 'always_invalidate',
-                        'expiration_time' => 99,
-                    ],
                     'block_interval' => 88,
                 ],
             ],
@@ -90,10 +82,6 @@ final class ConfigurationTest extends TestCase
                 'owner_factory' => [
                     'driver' => 'value',
                     'value' => 'bar',
-                ],
-                'validator' => [
-                    'driver' => 'always_invalidate',
-                    'expiration_time' => 99,
                 ],
                 'block_interval' => 88,
                 'predis' => 'foo',
@@ -150,10 +138,6 @@ final class ConfigurationTest extends TestCase
                     'prefix' => 'block',
                 ],
                 'owner_factory' => ['driver' => 'symfony_session'],
-                'validator' => [
-                    'driver' => 'expired',
-                    'expiration_time' => 300,
-                ],
                 'block_interval' => 30,
             ],
         );
@@ -191,10 +175,6 @@ final class ConfigurationTest extends TestCase
                     'prefix' => 'block',
                 ],
                 'owner_factory' => ['driver' => 'symfony_session'],
-                'validator' => [
-                    'driver' => 'expired',
-                    'expiration_time' => 300,
-                ],
                 'block_interval' => 30,
                 'predis' => 'my_predis',
             ],
@@ -251,70 +231,6 @@ final class ConfigurationTest extends TestCase
                 'owner_factory' => [
                     'driver' => 'custom',
                     'service' => 'foo',
-                ],
-                'validator' => [
-                    'driver' => 'expired',
-                    'expiration_time' => 300,
-                ],
-                'block_interval' => 30,
-            ],
-        );
-    }
-
-    public function testInvalidValidatorDriver(): void
-    {
-        $this->expectException(InvalidConfigurationException::class);
-        // phpcs:ignore Generic.Files.LineLength.TooLong
-        $this->expectExceptionMessage('Invalid configuration for path "brainbits_blocking.validator.driver": The validator driver "test" is not supported. Please choose one of ["expired","always_invalidate","custom"]');
-
-        $this->assertProcessedConfigurationEquals(
-            [
-                [
-                    'validator' => ['driver' => 'test'],
-                ],
-            ],
-            [],
-        );
-    }
-
-    public function testMissingCustomValidatorService(): void
-    {
-        $this->expectException(InvalidConfigurationException::class);
-        // phpcs:ignore Generic.Files.LineLength.TooLong
-        $this->expectExceptionMessage('Invalid configuration for path "brainbits_blocking": You need to specify your own validator service when using the "custom" validator driver.');
-
-        $this->assertProcessedConfigurationEquals(
-            [
-                [
-                    'validator' => ['driver' => 'custom'],
-                ],
-            ],
-            [],
-        );
-    }
-
-    public function testCustomValidatorService(): void
-    {
-        $this->assertProcessedConfigurationEquals(
-            [
-                [
-                    'validator' => [
-                        'driver' => 'custom',
-                        'service' => 'foo',
-                    ],
-                ],
-            ],
-            [
-                'storage' => [
-                    'driver' => 'filesystem',
-                    'storage_dir' => '%kernel.cache_dir%/blocking/',
-                    'prefix' => 'block',
-                ],
-                'owner_factory' => ['driver' => 'symfony_session'],
-                'validator' => [
-                    'driver' => 'custom',
-                    'service' => 'foo',
-                    'expiration_time' => 300,
                 ],
                 'block_interval' => 30,
             ],

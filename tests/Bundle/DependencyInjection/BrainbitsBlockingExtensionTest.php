@@ -18,7 +18,6 @@ use Brainbits\Blocking\Owner\SymfonySessionOwnerFactory;
 use Brainbits\Blocking\Owner\ValueOwnerFactory;
 use Brainbits\Blocking\Storage\FilesystemStorage;
 use Brainbits\Blocking\Storage\InMemoryStorage;
-use Brainbits\Blocking\Validator\ExpiredValidator;
 use Matthias\SymfonyDependencyInjectionTest\PhpUnit\AbstractExtensionTestCase;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 
@@ -36,8 +35,6 @@ final class BrainbitsBlockingExtensionTest extends AbstractExtensionTestCase
 
         $this->assertContainerBuilderHasService('brainbits_blocking.storage', FilesystemStorage::class);
         $this->assertContainerBuilderHasService('brainbits_blocking.owner_factory', SymfonySessionOwnerFactory::class);
-        $this->assertContainerBuilderHasService('brainbits_blocking.validator', ExpiredValidator::class);
-        $this->assertContainerBuilderHasParameter('brainbits_blocking.validator.expiration_time', 300);
         $this->assertContainerBuilderHasParameter('brainbits_blocking.interval', 30);
     }
 
@@ -49,14 +46,11 @@ final class BrainbitsBlockingExtensionTest extends AbstractExtensionTestCase
                 'driver' => 'value',
                 'value' => 'xx',
             ],
-            'validator' => ['expiration_time' => 8],
             'block_interval' => 9,
         ]);
 
         $this->assertContainerBuilderHasService('brainbits_blocking.storage', InMemoryStorage::class);
         $this->assertContainerBuilderHasService('brainbits_blocking.owner_factory', ValueOwnerFactory::class);
-        $this->assertContainerBuilderHasService('brainbits_blocking.validator', ExpiredValidator::class);
-        $this->assertContainerBuilderHasParameter('brainbits_blocking.validator.expiration_time', 8);
         $this->assertContainerBuilderHasParameter('brainbits_blocking.interval', 9);
     }
 
@@ -92,17 +86,5 @@ final class BrainbitsBlockingExtensionTest extends AbstractExtensionTestCase
         ]);
 
         $this->assertContainerBuilderHasAlias('brainbits_blocking.owner_factory', 'bar');
-    }
-
-    public function testCustomValidatorService(): void
-    {
-        $this->load([
-            'validator' => [
-                'driver' => 'custom',
-                'service' => 'baz',
-            ],
-        ]);
-
-        $this->assertContainerBuilderHasAlias('brainbits_blocking.validator', 'baz');
     }
 }

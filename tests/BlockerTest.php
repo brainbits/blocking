@@ -15,14 +15,11 @@ namespace Brainbits\Blocking\Tests;
 
 use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Blocker;
-use Brainbits\Blocking\Exception\BlockFailedException;
 use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\OwnerFactoryInterface;
 use Brainbits\Blocking\Owner\ValueOwnerFactory;
 use Brainbits\Blocking\Storage\StorageInterface;
-use Brainbits\Blocking\Validator\AlwaysInvalidateValidator;
-use Brainbits\Blocking\Validator\AlwaysValidateValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -62,90 +59,6 @@ final class BlockerTest extends TestCase
         $this->assertInstanceOf(Block::class, $result);
     }
 
-    public function testBlockReturnsBlockOnExistingAndInvalidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-        $storage->expects($this->once())
-            ->method('write');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            new AlwaysInvalidateValidator(),
-        );
-        $result = $blocker->block($this->identifier);
-
-        $this->assertInstanceOf(Block::class, $result);
-    }
-
-    public function testBlockThrowsExceptionOnExistingAndValidAndNonOwnerBlock(): void
-    {
-        $this->expectException(BlockFailedException::class);
-
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->never())
-            ->method('write');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            new AlwaysValidateValidator(),
-        );
-        $result = $blocker->block($this->identifier);
-
-        $this->assertNull($result);
-    }
-
-    public function testBlockUpdatesBlockOnExistingAndValidAndOwnedBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('touch')
-            ->with($this->block);
-
-        $blocker = new Blocker(
-            $storage,
-            new ValueOwnerFactory('baz'),
-            new AlwaysValidateValidator(),
-        );
-        $result = $blocker->block($this->identifier);
-
-        $this->assertInstanceOf(Block::class, $result);
-    }
-
-    public function testUnblockReturnsNullOnExistingAndInvalidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            new AlwaysInvalidateValidator(),
-        );
-        $result = $blocker->unblock($this->identifier);
-
-        $this->assertNull($result);
-    }
-
-    public function testUnblockReturnsBlockOnExistingAndValidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-        );
-        $result = $blocker->unblock($this->identifier);
-
-        $this->assertSame($this->block, $result);
-    }
-
     public function testUnblockReturnsNullOnNonexistingBlock(): void
     {
         $storage = $this->createNonexistingStorage();
@@ -159,33 +72,6 @@ final class BlockerTest extends TestCase
         $result = $blocker->unblock($this->identifier);
 
         $this->assertNull($result);
-    }
-
-    public function testIsBlockedReturnsFalseOnExistingAndInvalidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            new AlwaysInvalidateValidator(),
-        );
-        $result = $blocker->isBlocked($this->identifier);
-
-        $this->assertFalse($result);
-    }
-
-    public function testIsBlockedReturnsTrueOnExistingAndValidBlock(): void
-    {
-        $blocker = new Blocker(
-            $this->createExistingStorage(),
-            $this->ownerFactory,
-        );
-        $result = $blocker->isBlocked($this->identifier);
-
-        $this->assertTrue($result);
     }
 
     public function testIsBlockedReturnsFalseOnNonexistingBlock(): void

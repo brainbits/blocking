@@ -17,14 +17,12 @@ use Brainbits\Blocking\Exception\BlockFailedException;
 use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\OwnerFactoryInterface;
 use Brainbits\Blocking\Storage\StorageInterface;
-use Brainbits\Blocking\Validator\ValidatorInterface;
 
 final readonly class Blocker
 {
     public function __construct(
         private StorageInterface $storage,
         private OwnerFactoryInterface $ownerFactory,
-        private ValidatorInterface|null $validator = null,
         private int $defaultTtl = 60,
     ) {
     }
@@ -79,23 +77,7 @@ final readonly class Blocker
     {
         $block = $this->storage->get($identifier);
 
-        if (!$block) {
-            return false;
-        }
-
-        if (!$this->validator) {
-            return true;
-        }
-
-        $valid = $this->validator->validate($block);
-
-        if ($valid) {
-            return true;
-        }
-
-        $this->storage->remove($block);
-
-        return false;
+        return $block !== null;
     }
 
     public function getBlock(BlockIdentity $identifier): Block|null

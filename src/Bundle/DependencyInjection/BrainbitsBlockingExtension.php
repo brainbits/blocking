@@ -43,6 +43,8 @@ class BrainbitsBlockingExtension extends Extension
             $container->setAlias('brainbits_blocking.predis', $config['predis']);
         }
 
+        $container->setParameter('brainbits_blocking.interval', $config['block_interval']);
+
         if (isset($config['storage']['storage_dir'])) {
             $container->setParameter(
                 'brainbits_blocking.storage.storage_dir',
@@ -62,20 +64,6 @@ class BrainbitsBlockingExtension extends Extension
                 'brainbits_blocking.owner_factory.value',
                 $config['owner_factory']['value'],
             );
-        }
-
-        if (isset($config['validator']['expiration_time'])) {
-            $container->setParameter(
-                'brainbits_blocking.validator.expiration_time',
-                $config['validator']['expiration_time'],
-            );
-            $container->setParameter('brainbits_blocking.interval', $config['block_interval']);
-        }
-
-        if ($config['validator']['driver'] !== 'custom') {
-            $xmlLoader->load(sprintf('validator/%s.xml', $config['validator']['driver']));
-        } else {
-            $container->setAlias('brainbits_blocking.validator', $config['validator']['service']);
         }
 
         if ($config['storage']['driver'] !== 'custom') {

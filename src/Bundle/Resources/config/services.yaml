@@ -9,7 +9,6 @@ services:
         arguments:
             - '@brainbits_blocking.storage'
             - '@brainbits_blocking.owner_factory'
-            - '@brainbits_blocking.validator'
 
 
     brainbits_blocking.controller:
