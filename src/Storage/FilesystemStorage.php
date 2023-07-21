@@ -78,7 +78,7 @@ final class FilesystemStorage implements StorageInterface
         return true;
     }
 
-    public function touch(Block $block): bool
+    public function touch(Block $block, int $ttl): bool
     {
         $identity = $block->getIdentity();
 
@@ -89,13 +89,10 @@ final class FilesystemStorage implements StorageInterface
         $filename = $this->getFilename($block->getIdentity());
         $metaFilename = $filename . '.meta';
 
-        $metaContent = file_get_contents($metaFilename);
-        assert(is_string($metaContent));
-        assert($metaContent !== '');
-        $metaData = json_decode($metaContent, true);
-        assert(is_array($metaData));
-        $metaData['updatedAt'] = $this->clock->now()->format('c');
-        $metaContent = json_encode($metaData);
+        $metaContent = json_encode([
+            'ttl' => $ttl,
+            'updatedAt' => $this->clock->now()->format('c'),
+        ]);
 
         if (file_put_contents($metaFilename, $metaContent) === false) {
             throw IOException::writeFailed($metaFilename);

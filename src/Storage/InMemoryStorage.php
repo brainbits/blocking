@@ -52,12 +52,13 @@ final class InMemoryStorage implements StorageInterface
         return true;
     }
 
-    public function touch(Block $block): bool
+    public function touch(Block $block, int $ttl): bool
     {
         if (!$this->exists($block->getIdentity())) {
             return false;
         }
 
+        $this->blocks[(string) $block->getIdentity()]['ttl'] = $ttl;
         $this->blocks[(string) $block->getIdentity()]['updatedAt'] = $this->clock->now();
 
         return true;

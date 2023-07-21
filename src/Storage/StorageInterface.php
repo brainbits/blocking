@@ -23,7 +23,7 @@ interface StorageInterface
 {
     public function write(Block $block, int $ttl): bool;
 
-    public function touch(Block $block): bool;
+    public function touch(Block $block, int $ttl): bool;
 
     public function remove(Block $block): bool;
 

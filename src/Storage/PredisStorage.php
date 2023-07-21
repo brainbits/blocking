@@ -55,7 +55,7 @@ final readonly class PredisStorage implements StorageInterface
         return true;
     }
 
-    public function touch(Block $block): bool
+    public function touch(Block $block, int $ttl): bool
     {
         $identity = $block->getIdentity();
 
@@ -64,7 +64,7 @@ final readonly class PredisStorage implements StorageInterface
         }
 
         try {
-            $this->client->touch($this->createKey($identity));
+            $this->client->expire($this->createKey($identity), $ttl);
         } catch (PredisException) {
             throw IOException::touchFailed((string) $identity);
         }

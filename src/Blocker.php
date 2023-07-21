@@ -49,7 +49,7 @@ final readonly class Blocker
                 return null;
             }
 
-            $this->storage->touch($block);
+            $this->storage->touch($block, $ttl ?? $this->defaultTtl);
 
             return $block;
         }
