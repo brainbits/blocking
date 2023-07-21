@@ -13,52 +13,29 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking;
 
-use Brainbits\Blocking\Identity\IdentityInterface;
-use Brainbits\Blocking\Owner\OwnerInterface;
-use DateTimeImmutable;
+use Brainbits\Blocking\Identity\BlockIdentity;
+use Brainbits\Blocking\Owner\Owner;
 
-/**
- * Standard block.
- */
-class Block implements BlockInterface
+final class Block
 {
-    private DateTimeImmutable $updatedAt;
-
     public function __construct(
-        private IdentityInterface $identifier,
-        private OwnerInterface $owner,
-        private DateTimeImmutable $createdAt,
+        private BlockIdentity $identifier,
+        private Owner $owner,
     ) {
-        $this->updatedAt = $createdAt;
     }
 
-    public function getIdentity(): IdentityInterface
+    public function getIdentity(): BlockIdentity
     {
         return $this->identifier;
     }
 
-    public function getOwner(): OwnerInterface
+    public function getOwner(): Owner
     {
         return $this->owner;
     }
 
-    public function isOwnedBy(OwnerInterface $owner): bool
+    public function isOwnedBy(Owner $owner): bool
     {
         return $this->owner->equals($owner);
-    }
-
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function getUpdatedAt(): DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function touch(DateTimeImmutable $updatedAt): void
-    {
-        $this->updatedAt = $updatedAt;
     }
 }

@@ -13,16 +13,13 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Owner;
 
-/**
- * Value owner factory.
- */
-class ValueOwnerFactory implements OwnerFactoryInterface
+final class ValueOwnerFactory implements OwnerFactoryInterface
 {
     public function __construct(private string $value)
     {
     }
 
-    public function createOwner(): OwnerInterface
+    public function createOwner(): Owner
     {
         return new Owner($this->value);
     }

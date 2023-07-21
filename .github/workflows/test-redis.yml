@@ -1,4 +1,4 @@
-name: "Test"
+name: "Test Redis"
 
 on:
   push:
@@ -44,11 +44,10 @@ jobs:
         if: ${{ matrix.dependencies == 'highest' }}
         run: "composer update --prefer-dist --no-interaction --no-progress --no-suggest"
 
+      - name: "Start Redis"
+        uses: "supercharge/redis-github-action@1.5.0"
+        with:
+          redis-version: "6"
+
       - name: "Unit tests"
-        run: "vendor/bin/phpunit --exclude-group redis"
-
-      - name: "Coding style"
-        run: "vendor/bin/phpcs --report=summary"
-
-      - name: "Static analysis"
-        run: "vendor/bin/phpstan --no-progress"
+        run: "REDIS_DSN='redis://127.0.0.1:6379' vendor/bin/phpunit --group redis --fail-on-skipped"

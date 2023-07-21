@@ -14,30 +14,22 @@ declare(strict_types=1);
 namespace Brainbits\Blocking;
 
 use Brainbits\Blocking\Exception\BlockFailedException;
-use Brainbits\Blocking\Identity\IdentityInterface;
+use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\OwnerFactoryInterface;
 use Brainbits\Blocking\Storage\StorageInterface;
-use Brainbits\Blocking\Validator\ValidatorInterface;
-use DateTimeImmutable;
 
-/**
- * Blocker.
- */
-class Blocker
+final readonly class Blocker
 {
-    private StorageInterface $storage;
-
     public function __construct(
-        StorageInterface $adapter,
+        private StorageInterface $storage,
         private OwnerFactoryInterface $ownerFactory,
-        private ValidatorInterface $validator,
+        private int $defaultTtl = 60,
     ) {
-        $this->storage = $adapter;
     }
 
-    public function block(IdentityInterface $identifier): BlockInterface
+    public function block(BlockIdentity $identifier, int|null $ttl = null): Block
     {
-        $block = $this->tryBlock($identifier);
+        $block = $this->tryBlock($identifier, $ttl);
 
         if ($block === null) {
             throw BlockFailedException::createAlreadyBlocked($identifier);
@@ -46,7 +38,7 @@ class Blocker
         return $block;
     }
 
-    public function tryBlock(IdentityInterface $identifier): BlockInterface|null
+    public function tryBlock(BlockIdentity $identifier, int|null $ttl = null): Block|null
     {
         $owner = $this->ownerFactory->createOwner();
 
@@ -57,19 +49,19 @@ class Blocker
                 return null;
             }
 
-            $this->storage->touch($block);
+            $this->storage->touch($block, $ttl ?? $this->defaultTtl);
 
             return $block;
         }
 
-        $block = new Block($identifier, $owner, new DateTimeImmutable());
+        $block = new Block($identifier, $owner);
 
-        $this->storage->write($block);
+        $this->storage->write($block, $ttl ?? $this->defaultTtl);
 
         return $block;
     }
 
-    public function unblock(IdentityInterface $identifier): BlockInterface|null
+    public function unblock(BlockIdentity $identifier): Block|null
     {
         $block = $this->getBlock($identifier);
         if ($block === null) {
@@ -81,26 +73,14 @@ class Blocker
         return $block;
     }
 
-    public function isBlocked(IdentityInterface $identifier): bool
+    public function isBlocked(BlockIdentity $identifier): bool
     {
         $block = $this->storage->get($identifier);
 
-        if (!$block) {
-            return false;
-        }
-
-        $valid = $this->validator->validate($block);
-
-        if ($valid) {
-            return true;
-        }
-
-        $this->storage->remove($block);
-
-        return false;
+        return $block !== null;
     }
 
-    public function getBlock(IdentityInterface $identifier): BlockInterface|null
+    public function getBlock(BlockIdentity $identifier): Block|null
     {
         if (!$this->isBlocked($identifier)) {
             return null;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -21,10 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * Symfony token owner factory test
- */
-class SymfonyTokenOwnerFactoryTest extends TestCase
+final class SymfonyTokenOwnerFactoryTest extends TestCase
 {
     public function testCreateOwner(): void
     {
@@ -34,7 +33,7 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
         $this->assertEquals($owner, new Owner('foo'));
     }
 
-    public function testE(): void
+    public function testNotTokenFoundExceptionIsThrown(): void
     {
         $this->expectException(NoTokenFoundException::class);
 
@@ -42,7 +41,7 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
         $factory->createOwner();
     }
 
-    public function testE2(): void
+    public function testNotUserFoundExceptionIsThrown(): void
     {
         $this->expectException(NoUserFoundException::class);
 
@@ -51,11 +50,11 @@ class SymfonyTokenOwnerFactoryTest extends TestCase
         $factory->createOwner();
     }
 
-    /**
-     * @return TokenStorageInterface|MockObject
-     */
-    private function createTokenStorage(string $username, bool $createToken = true, bool $createUser = true)
-    {
+    private function createTokenStorage(
+        string $username,
+        bool $createToken = true,
+        bool $createUser = true,
+    ): TokenStorageInterface|MockObject {
         $user = $this->createMock(UserInterface::class);
         $user->expects($this->any())
             ->method('getUserIdentifier')

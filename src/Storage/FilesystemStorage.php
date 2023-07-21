@@ -13,118 +13,168 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Storage;
 
-use Brainbits\Blocking\BlockInterface;
+use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Exception\DirectoryNotWritableException;
 use Brainbits\Blocking\Exception\FileNotWritableException;
 use Brainbits\Blocking\Exception\IOException;
 use Brainbits\Blocking\Exception\UnserializeFailedException;
-use Brainbits\Blocking\Identity\IdentityInterface;
+use Brainbits\Blocking\Identity\BlockIdentity;
+use Brainbits\Blocking\Owner\Owner;
 use DateTimeImmutable;
+use Psr\Clock\ClockInterface;
 
+use function assert;
 use function dirname;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
-use function filemtime;
+use function is_array;
+use function is_string;
 use function is_writable;
+use function json_decode;
+use function json_encode;
 use function mkdir;
 use function rtrim;
-use function serialize;
-use function touch;
 use function unlink;
-use function unserialize;
 
 /**
  * Filesystem block storage.
  * Uses files for storing block information.
  */
-class FilesystemStorage implements StorageInterface
+final class FilesystemStorage implements StorageInterface
 {
-    private string $root;
-
-    public function __construct(string $root)
-    {
+    public function __construct(
+        private ClockInterface $clock,
+        private string $root,
+    ) {
         $this->root = rtrim($root, '/');
     }
 
-    public function write(BlockInterface $block): bool
+    public function write(Block $block, int $ttl): bool
     {
-        $filename = $this->getFilename($block->getIdentity());
+        $identity = $block->getIdentity();
 
-        if (file_put_contents($filename, serialize($block)) === false) {
-            throw IOException::createWriteFailed($filename);
+        $filename = $this->getFilename($identity);
+        $metaFilename = $filename . '.meta';
+
+        $content = json_encode([
+            'identity' => (string) $identity,
+            'owner' => (string) $block->getOwner(),
+        ]);
+
+        $metaContent = json_encode([
+            'ttl' => $ttl,
+            'updatedAt' => $this->clock->now()->format('c'),
+        ]);
+
+        if (file_put_contents($filename, $content) === false) {
+            throw IOException::writeFailed($filename);
+        }
+
+        if (file_put_contents($metaFilename, $metaContent) === false) {
+            throw IOException::writeFailed($metaFilename);
         }
 
         return true;
     }
 
-    public function touch(BlockInterface $block): bool
+    public function touch(Block $block, int $ttl): bool
     {
+        $identity = $block->getIdentity();
+
+        if (!$this->exists($identity)) {
+            return false;
+        }
+
         $filename = $this->getFilename($block->getIdentity());
+        $metaFilename = $filename . '.meta';
 
-        if (touch($filename) === false) {
-            throw IOException::createTouchFailed($filename);
+        $metaContent = json_encode([
+            'ttl' => $ttl,
+            'updatedAt' => $this->clock->now()->format('c'),
+        ]);
+
+        if (file_put_contents($metaFilename, $metaContent) === false) {
+            throw IOException::writeFailed($metaFilename);
         }
-
-        $updatedAt = DateTimeImmutable::createFromFormat('U', (string) filemtime($filename));
-
-        if (!$updatedAt) {
-            throw IOException::createTouchFailed($filename);
-        }
-
-        $block->touch($updatedAt);
 
         return true;
     }
 
-    public function remove(BlockInterface $block): bool
+    public function remove(Block $block): bool
     {
         if (!$this->exists($block->getIdentity())) {
             return false;
         }
 
         $filename = $this->getFilename($block->getIdentity());
+        $metaFilename = $filename . '.meta';
+
         if (unlink($filename) === false) {
             if (file_exists($filename)) {
-                throw IOException::createUnlinkFailed($filename);
+                throw IOException::removeFailed($filename);
+            }
+        }
+
+        if (unlink($metaFilename) === false) {
+            if (file_exists($metaFilename)) {
+                throw IOException::removeFailed($metaFilename);
             }
         }
 
         return true;
     }
 
-    public function exists(IdentityInterface $identifier): bool
+    public function exists(BlockIdentity $identity): bool
     {
-        $filename = $this->getFilename($identifier);
+        $filename = $this->getFilename($identity);
+        $metaFilename = $filename . '.meta';
 
-        return file_exists($filename);
+        if (!file_exists($filename) || !file_exists($metaFilename)) {
+            return false;
+        }
+
+        $metaContent = file_get_contents($metaFilename);
+        assert(is_string($metaContent));
+        assert($metaContent !== '');
+        $metaData = json_decode($metaContent, true);
+        assert(is_array($metaData));
+
+        $now = $this->clock->now();
+
+        $expiresAt = (new DateTimeImmutable((string) $metaData['updatedAt'], $now->getTimezone()))
+            ->modify('+' . $metaData['ttl'] . ' seconds');
+
+        return $expiresAt > $now;
     }
 
-    public function get(IdentityInterface $identifier): BlockInterface|null
+    public function get(BlockIdentity $identity): Block|null
     {
-        if (!$this->exists($identifier)) {
+        if (!$this->exists($identity)) {
             return null;
         }
 
-        $filename = $this->getFilename($identifier);
+        $filename = $this->getFilename($identity);
+
         $content = file_get_contents($filename);
 
         if (!$content) {
             throw UnserializeFailedException::createFromInput($content);
         }
 
-        $updatedAt = DateTimeImmutable::createFromFormat('U', (string) filemtime($filename));
-        $block = unserialize($content);
-        if (!$block instanceof BlockInterface || !$updatedAt) {
-            throw UnserializeFailedException::createFromInput($content);
-        }
+        $data = json_decode($content, true);
 
-        $block->touch($updatedAt);
+        assert(is_array($data));
+        assert($data['identity'] ?? false);
+        assert($data['owner'] ?? false);
 
-        return $block;
+        return new Block(
+            new BlockIdentity($data['identity']),
+            new Owner($data['owner']),
+        );
     }
 
-    private function getFilename(IdentityInterface $identifier): string
+    private function getFilename(BlockIdentity $identifier): string
     {
         return $this->ensureFileIsWritable($this->ensureDirectoryExists($this->root) . '/' . $identifier);
     }

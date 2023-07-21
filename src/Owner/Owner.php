@@ -13,13 +13,13 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Owner;
 
-class Owner implements OwnerInterface
+final readonly class Owner
 {
     public function __construct(private string $ownerValue)
     {
     }
 
-    public function equals(OwnerInterface $owner): bool
+    public function equals(self $owner): bool
     {
         return (string) $this === (string) $owner;
     }

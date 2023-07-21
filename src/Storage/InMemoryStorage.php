@@ -13,41 +13,58 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Storage;
 
-use Brainbits\Blocking\BlockInterface;
-use Brainbits\Blocking\Identity\IdentityInterface;
+use Brainbits\Blocking\Block;
+use Brainbits\Blocking\Identity\BlockIdentity;
 use DateTimeImmutable;
+use Psr\Clock\ClockInterface;
 
 /**
  * In memory block storage.
  * Uses an internal array for storing block information.
  */
-class InMemoryStorage implements StorageInterface
+final class InMemoryStorage implements StorageInterface
 {
-    /** @var BlockInterface[] */
+    /** @var array<string, array{block: Block, ttl: int, updatedAt: DateTimeImmutable}> */
     private array $blocks;
 
-    public function __construct(BlockInterface ...$blocks)
+    public function __construct(
+        private ClockInterface $clock,
+    ) {
+    }
+
+    public function addBlock(Block $block, int $ttl, DateTimeImmutable $updatedAt): void
     {
-        foreach ($blocks as $block) {
-            $this->blocks[(string) $block->getIdentity()] = $block;
+        $this->blocks[(string) $block->getIdentity()] = [
+            'block' => $block,
+            'ttl' => $ttl,
+            'updatedAt' => $updatedAt,
+        ];
+    }
+
+    public function write(Block $block, int $ttl): bool
+    {
+        $this->blocks[(string) $block->getIdentity()] = [
+            'block' => $block,
+            'ttl' => $ttl,
+            'updatedAt' => $this->clock->now(),
+        ];
+
+        return true;
+    }
+
+    public function touch(Block $block, int $ttl): bool
+    {
+        if (!$this->exists($block->getIdentity())) {
+            return false;
         }
-    }
 
-    public function write(BlockInterface $block): bool
-    {
-        $this->blocks[(string) $block->getIdentity()] = $block;
+        $this->blocks[(string) $block->getIdentity()]['ttl'] = $ttl;
+        $this->blocks[(string) $block->getIdentity()]['updatedAt'] = $this->clock->now();
 
         return true;
     }
 
-    public function touch(BlockInterface $block): bool
-    {
-        $this->blocks[(string) $block->getIdentity()]->touch(new DateTimeImmutable());
-
-        return true;
-    }
-
-    public function remove(BlockInterface $block): bool
+    public function remove(Block $block): bool
     {
         if (!$this->exists($block->getIdentity())) {
             return false;
@@ -58,21 +75,27 @@ class InMemoryStorage implements StorageInterface
         return true;
     }
 
-    public function exists(IdentityInterface $identifier): bool
+    public function exists(BlockIdentity $identity): bool
     {
-        return isset($this->blocks[(string) $identifier]);
+        if (!isset($this->blocks[(string) $identity])) {
+            return false;
+        }
+
+        $now = $this->clock->now();
+
+        $metaData = $this->blocks[(string) $identity];
+
+        $expiresAt = $metaData['updatedAt']->modify('+' . $metaData['ttl'] . ' seconds');
+
+        return $expiresAt > $now;
     }
 
-    public function get(IdentityInterface $identifier): BlockInterface|null
+    public function get(BlockIdentity $identity): Block|null
     {
-        if (!$this->exists($identifier)) {
+        if (!$this->exists($identity)) {
             return null;
         }
 
-        $block = $this->blocks[(string) $identifier];
-
-        $block->touch(new DateTimeImmutable());
-
-        return $block;
+        return $this->blocks[(string) $identity]['block'];
     }
 }

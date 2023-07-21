@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -12,32 +14,21 @@
 namespace Brainbits\Blocking\Tests;
 
 use Brainbits\Blocking\Block;
-use Brainbits\Blocking\Identity\IdentityInterface;
-use Brainbits\Blocking\Owner\OwnerInterface;
+use Brainbits\Blocking\Identity\BlockIdentity;
+use Brainbits\Blocking\Owner\Owner;
 use DateTimeImmutable;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class BlockTest extends TestCase
+final class BlockTest extends TestCase
 {
-    /**
-     * @var IdentityInterface|MockObject
-     */
-    private $identifier;
+    private BlockIdentity $identifier;
 
-    /**
-     * @var OwnerInterface|MockObject
-     */
-    private $owner;
+    private Owner $owner;
 
     protected function setUp(): void
     {
-        $this->identifier = $this->createMock(IdentityInterface::class);
-
-        $this->owner = $this->createMock(OwnerInterface::class);
-        $this->owner->expects($this->any())
-            ->method('__toString')
-            ->willReturn('dummyOwner');
+        $this->identifier = new BlockIdentity('foo');
+        $this->owner = new Owner('dummyOwner');
     }
 
     public function testConstruct(): void
@@ -65,66 +56,13 @@ class BlockTest extends TestCase
     {
         $block = new Block($this->identifier, $this->owner, new DateTimeImmutable());
 
-        $this->owner->expects($this->once())
-            ->method('equals')
-            ->with($this->owner)
-            ->willReturn(true);
-
         $this->assertTrue($block->isOwnedBy($this->owner));
     }
 
     public function testIsOwnedByReturnsFalse(): void
     {
-        $block = new Block($this->identifier, $this->owner, new DateTimeImmutable());
+        $block = new Block($this->identifier, $this->owner);
 
-        $owner = $this->createMock(OwnerInterface::class);
-        $this->owner->expects($this->any())
-            ->method('__toString')
-            ->willReturn('dummyOwner');
-
-        $this->owner->expects($this->once())
-            ->method('equals')
-            ->with($owner)
-            ->willReturn(false);
-
-        $this->assertFalse($block->isOwnedBy($owner));
-    }
-
-    public function testGetCreatedAtReturnsCorrectValue(): void
-    {
-        $createdAt = new DateTimeImmutable();
-
-        $block = new Block($this->identifier, $this->owner, $createdAt);
-        $result = $block->getCreatedAt();
-
-        $this->assertInstanceOf(DateTimeImmutable::class, $result);
-        $this->assertSame($createdAt, $result);
-    }
-
-    public function testGetUpdatedAtReturnsCreatedAtValueAfterInstanciation(): void
-    {
-        $createdAt = new DateTimeImmutable();
-
-        $block = new Block($this->identifier, $this->owner, $createdAt);
-        $result = $block->getUpdatedAt();
-
-        $this->assertInstanceOf(DateTimeImmutable::class, $result);
-        $this->assertSame($createdAt, $result);
-    }
-
-    public function testTouchUpdatesValue(): void
-    {
-        $createdAt = new DateTimeImmutable();
-
-        $block = new Block($this->identifier, $this->owner, $createdAt);
-
-        $updatedAt = new DateTimeImmutable();
-
-        $block->touch($updatedAt);
-        $result = $block->getUpdatedAt();
-
-        $this->assertInstanceOf(DateTimeImmutable::class, $result);
-        $this->assertNotSame($createdAt, $result);
-        $this->assertSame($updatedAt, $result);
+        $this->assertFalse($block->isOwnedBy(new Owner('otherOwner')));
     }
 }

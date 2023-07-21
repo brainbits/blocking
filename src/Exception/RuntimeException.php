@@ -13,9 +13,6 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Exception;
 
-/**
- * Runtime exception.
- */
 class RuntimeException extends \RuntimeException implements ExceptionInterface
 {
 }

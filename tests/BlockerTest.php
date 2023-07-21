@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the brainbits blocking package.
  *
@@ -11,54 +13,35 @@
 
 namespace Brainbits\Blocking\Tests;
 
+use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Blocker;
-use Brainbits\Blocking\BlockInterface;
-use Brainbits\Blocking\Exception\BlockFailedException;
-use Brainbits\Blocking\Identity\IdentityInterface;
+use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\OwnerFactoryInterface;
+use Brainbits\Blocking\Owner\ValueOwnerFactory;
 use Brainbits\Blocking\Storage\StorageInterface;
-use Brainbits\Blocking\Validator\ValidatorInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class BlockerTest extends TestCase
+final class BlockerTest extends TestCase
 {
-    /**
-     * @var BlockInterface|MockObject
-     */
-    protected $block;
+    private Block $block;
 
-    /**
-     * @var IdentityInterface|MockObject
-     */
-    protected $identifier;
+    private BlockIdentity $identifier;
 
-    /**
-     * @var OwnerFactoryInterface|MockObject
-     */
-    private $ownerFactory;
+    private OwnerFactoryInterface $ownerFactory;
 
-    private $owner;
+    private Owner $owner;
 
     protected function setUp(): void
     {
         $this->owner = new Owner('bar');
 
-        $this->identifier = $this->createMock(IdentityInterface::class);
-        $this->identifier->expects($this->any())
-            ->method('__toString')
-            ->willReturn('foo');
+        $this->identifier = new BlockIdentity('foo');
 
-        $this->ownerFactory = $this->createMock(OwnerFactoryInterface::class);
-        $this->ownerFactory->expects($this->any())
-            ->method('createOwner')
-            ->willReturn($this->owner);
+        $this->ownerFactory = new ValueOwnerFactory('bar');
 
-        $this->block = $this->createMock(BlockInterface::class);
-        $this->block->expects($this->any())
-            ->method('getOwner')
-            ->willReturn(new Owner('baz'));
+        $this->block = new Block($this->identifier, new Owner('baz'));
     }
 
     public function testBlockReturnsBlockOnNonexistingBlock(): void
@@ -70,106 +53,10 @@ class BlockerTest extends TestCase
         $blocker = new Blocker(
             $storage,
             $this->ownerFactory,
-            $this->createInvalidValidator()
         );
         $result = $blocker->block($this->identifier);
 
-        $this->assertInstanceOf(BlockInterface::class, $result);
-    }
-
-    public function testBlockReturnsBlockOnExistingAndInvalidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-        $storage->expects($this->once())
-            ->method('write');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            $this->createInvalidValidator()
-        );
-        $result = $blocker->block($this->identifier);
-
-        $this->assertInstanceOf(BlockInterface::class, $result);
-    }
-
-    public function testBlockThrowsExceptionOnExistingAndValidAndNonOwnerBlock(): void
-    {
-        $this->expectException(BlockFailedException::class);
-
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->never())
-            ->method('write');
-
-        $this->block->expects($this->once())
-            ->method('isOwnedBy')
-            ->with($this->owner)
-            ->willReturn(false);
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            $this->createValidValidator()
-        );
-        $result = $blocker->block($this->identifier);
-
-        $this->assertNull($result);
-    }
-
-    public function testBlockUpdatesBlockOnExistingAndValidAndOwnedBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('touch')
-            ->with($this->block);
-
-        $this->block->expects($this->once())
-            ->method('isOwnedBy')
-            ->with($this->owner)
-            ->willReturn(true);
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            $this->createValidValidator()
-        );
-        $result = $blocker->block($this->identifier);
-
-        $this->assertInstanceOf(BlockInterface::class, $result);
-    }
-
-    public function testUnblockReturnsNullOnExistingAndInvalidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            $this->createInvalidValidator()
-        );
-        $result = $blocker->unblock($this->identifier);
-
-        $this->assertNull($result);
-    }
-
-    public function testUnblockReturnsBlockOnExistingAndValidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-
-        $blocker = new Blocker(
-            $storage,
-            $this->ownerFactory,
-            $this->createValidValidator()
-        );
-        $result = $blocker->unblock($this->identifier);
-
-        $this->assertSame($this->block, $result);
+        $this->assertInstanceOf(Block::class, $result);
     }
 
     public function testUnblockReturnsNullOnNonexistingBlock(): void
@@ -181,35 +68,10 @@ class BlockerTest extends TestCase
         $blocker = new Blocker(
             $storage,
             $this->ownerFactory,
-            $this->createInvalidValidator()
         );
         $result = $blocker->unblock($this->identifier);
 
         $this->assertNull($result);
-    }
-
-    public function testIsBlockedReturnsFalseOnExistingAndInvalidBlock(): void
-    {
-        $storage = $this->createExistingStorage();
-        $storage->expects($this->once())
-            ->method('remove');
-
-        $blocker = new Blocker($storage, $this->ownerFactory, $this->createInvalidValidator());
-        $result = $blocker->isBlocked($this->identifier);
-
-        $this->assertFalse($result);
-    }
-
-    public function testIsBlockedReturnsTrueOnExistingAndValidBlock(): void
-    {
-        $blocker = new Blocker(
-            $this->createExistingStorage(),
-            $this->ownerFactory,
-            $this->createValidValidator()
-        );
-        $result = $blocker->isBlocked($this->identifier);
-
-        $this->assertTrue($result);
     }
 
     public function testIsBlockedReturnsFalseOnNonexistingBlock(): void
@@ -217,7 +79,6 @@ class BlockerTest extends TestCase
         $blocker = new Blocker(
             $this->createNonexistingStorage(),
             $this->ownerFactory,
-            $this->createValidValidator()
         );
         $result = $blocker->isBlocked($this->identifier);
 
@@ -229,17 +90,13 @@ class BlockerTest extends TestCase
         $blocker = new Blocker(
             $this->createExistingStorage(),
             $this->ownerFactory,
-            $this->createValidValidator()
         );
         $result = $blocker->getBlock($this->identifier);
 
-        $this->assertInstanceOf(BlockInterface::class, $result);
+        $this->assertInstanceOf(Block::class, $result);
     }
 
-    /**
-     * @return StorageInterface|MockObject
-     */
-    private function createExistingStorage()
+    private function createExistingStorage(): StorageInterface|MockObject
     {
         $storage = $this->createMock(StorageInterface::class);
         $storage->expects($this->any())
@@ -252,10 +109,7 @@ class BlockerTest extends TestCase
         return $storage;
     }
 
-    /**
-     * @return StorageInterface|MockObject
-     */
-    private function createNonexistingStorage()
+    private function createNonexistingStorage(): StorageInterface|MockObject
     {
         $storage = $this->createMock(StorageInterface::class);
         $storage->expects($this->any())
@@ -266,31 +120,5 @@ class BlockerTest extends TestCase
             ->willReturn(null);
 
         return $storage;
-    }
-
-    /**
-     * @return ValidatorInterface|MockObject
-     */
-    private function createInvalidValidator()
-    {
-        $validator = $this->createMock(ValidatorInterface::class);
-        $validator->expects($this->any())
-            ->method('validate')
-            ->willReturn(false);
-
-        return $validator;
-    }
-
-    /**
-     * @return ValidatorInterface|MockObject
-     */
-    private function createValidValidator()
-    {
-        $validator = $this->createMock(ValidatorInterface::class);
-        $validator->expects($this->any())
-            ->method('validate')
-            ->willReturn(true);
-
-        return $validator;
     }
 }

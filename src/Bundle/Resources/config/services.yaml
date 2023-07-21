@@ -1,0 +1,19 @@
+services:
+    brainbits_blocking.filesystem_storage:
+        class: Brainbits\Blocking\Storage\FilesystemStorage
+        arguments:
+            - '%kernel.cache_dir%/blocks/'
+
+    brainbits_blocking.blocker:
+        class: Brainbits\Blocking\Blocker
+        arguments:
+            - '@brainbits_blocking.storage'
+            - '@brainbits_blocking.owner_factory'
+
+
+    brainbits_blocking.controller:
+        class: Brainbits\Blocking\Bundle\Controller\BlockingController
+        tags: ['controller.service_arguments']
+        arguments:
+            - '@brainbits_blocking.blocker'
+

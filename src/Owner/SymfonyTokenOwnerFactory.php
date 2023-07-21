@@ -18,16 +18,13 @@ use Brainbits\Blocking\Exception\NoUserFoundException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * Symfony token owner.
- */
-class SymfonyTokenOwnerFactory implements OwnerFactoryInterface
+final readonly class SymfonyTokenOwnerFactory implements OwnerFactoryInterface
 {
     public function __construct(private TokenStorageInterface $tokenStorage)
     {
     }
 
-    public function createOwner(): OwnerInterface
+    public function createOwner(): Owner
     {
         $token = $this->tokenStorage->getToken();
         if (!$token) {

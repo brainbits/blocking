@@ -13,16 +13,13 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Identity;
 
-/**
- * Standard identifier.
- */
-class Identity implements IdentityInterface
+final class BlockIdentity
 {
     public function __construct(private string $identityValue)
     {
     }
 
-    public function equals(IdentityInterface $identifier): bool
+    public function equals(self $identifier): bool
     {
         return (string) $identifier === (string) $this;
     }
