@@ -2,4 +2,4 @@ services:
     Brainbits\Blocking\Owner\OwnerFactoryInterface:
         class: Brainbits\Blocking\Owner\SymfonySessionOwnerFactory
         arguments:
-            - '@\Symfony\Component\HttpFoundation\RequestStack'
+            - '@Symfony\Component\HttpFoundation\RequestStack'
