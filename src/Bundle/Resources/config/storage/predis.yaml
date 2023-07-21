@@ -1,0 +1,8 @@
+services:
+    Brainbits\Blocking\Storage\StorageInterface:
+        alias: Brainbits\Blocking\Storage\PredisStorage
+
+    Brainbits\Blocking\Storage\PredisStorage:
+        arguments:
+            - "@brainbits_blocking.predis"
+            - "%brainbits_blocking.storage.prefix%"

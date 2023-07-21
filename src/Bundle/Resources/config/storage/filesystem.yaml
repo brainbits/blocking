@@ -1,0 +1,8 @@
+services:
+    Brainbits\Blocking\Storage\StorageInterface:
+        alias: Brainbits\Blocking\Storage\FilesystemStorage
+
+    Brainbits\Blocking\Storage\FilesystemStorage:
+        arguments:
+            - "@brainbits_blocking.clock"
+            - "%brainbits_blocking.storage.storage_dir%"

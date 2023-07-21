@@ -60,11 +60,11 @@ final class ConfigurationTest extends TestCase
         $this->assertProcessedConfigurationEquals(
             [
                 [
-                    'predis' => 'foo',
                     'storage' => [
                         'driver' => 'in_memory',
                         'storage_dir' => 'foo',
                         'prefix' => 'block',
+                        'predis' => 'foo',
                     ],
                     'owner_factory' => [
                         'driver' => 'value',
@@ -78,13 +78,13 @@ final class ConfigurationTest extends TestCase
                     'driver' => 'in_memory',
                     'storage_dir' => 'foo',
                     'prefix' => 'block',
+                    'predis' => 'foo',
                 ],
                 'owner_factory' => [
                     'driver' => 'value',
                     'value' => 'bar',
                 ],
                 'block_interval' => 88,
-                'predis' => 'foo',
             ],
         );
     }
@@ -164,8 +164,10 @@ final class ConfigurationTest extends TestCase
         $this->assertProcessedConfigurationEquals(
             [
                 [
-                    'predis' => 'my_predis',
-                    'storage' => ['driver' => 'predis'],
+                    'storage' => [
+                        'driver' => 'predis',
+                        'predis' => 'my_predis',
+                    ],
                 ],
             ],
             [
@@ -173,10 +175,10 @@ final class ConfigurationTest extends TestCase
                     'driver' => 'predis',
                     'storage_dir' => '%kernel.cache_dir%/blocking/',
                     'prefix' => 'block',
+                    'predis' => 'my_predis',
                 ],
                 'owner_factory' => ['driver' => 'symfony_session'],
                 'block_interval' => 30,
-                'predis' => 'my_predis',
             ],
         );
     }
