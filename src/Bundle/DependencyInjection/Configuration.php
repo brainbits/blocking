@@ -38,7 +38,7 @@ class Configuration implements ConfigurationInterface
                         return false;
                     }
 
-                    return ($v['predis'] ?? '') === '';
+                    return ($v['storage']['predis'] ?? '') === '';
                 })
                 ->thenInvalid(
                     'A predis alias has to be set for the predis storage driver.',
@@ -46,8 +46,12 @@ class Configuration implements ConfigurationInterface
             ->end()
             ->children()
                 ->integerNode('block_interval')->defaultValue(30)->end()
-                ->scalarNode('clock')->end()
-                ->scalarNode('predis')->end()
+                ->scalarNode('clock')
+                    ->validate()
+                        ->ifEmpty()
+                        ->thenInvalid('Clock service is required.')
+                    ->end()
+                ->end()
                 ->arrayNode('storage')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -64,6 +68,7 @@ class Configuration implements ConfigurationInterface
                         ->end()
                         ->scalarNode('service')->end()
                         ->scalarNode('storage_dir')->defaultValue('%kernel.cache_dir%/blocking/')->end()
+                        ->scalarNode('predis')->end()
                         ->scalarNode('prefix')->defaultValue('block')->end()
                     ->end()
                 ->end()

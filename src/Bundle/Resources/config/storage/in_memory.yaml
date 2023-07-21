@@ -1,0 +1,7 @@
+services:
+    Brainbits\Blocking\Storage\StorageInterface:
+        alias: Brainbits\Blocking\Storage\InMemoryStorage
+
+    Brainbits\Blocking\Storage\InMemoryStorage:
+        arguments:
+            - "@brainbits_blocking.clock"

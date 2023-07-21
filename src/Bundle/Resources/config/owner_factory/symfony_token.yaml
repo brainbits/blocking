@@ -1,0 +1,5 @@
+services:
+    Brainbits\Blocking\Owner\OwnerFactoryInterface:
+        class: Brainbits\Blocking\Owner\SymfonyTokenOwnerFactory
+        arguments:
+            - '@Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface'

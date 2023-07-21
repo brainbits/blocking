@@ -13,10 +13,11 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking\Bundle\DependencyInjection;
 
+use Brainbits\Blocking\Owner\OwnerFactoryInterface;
+use Brainbits\Blocking\Storage\StorageInterface;
 use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
@@ -27,7 +28,6 @@ class BrainbitsBlockingExtension extends Extension
     /** @param array<int, mixed> $configs */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $xmlLoader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $yamlLoader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $yamlLoader->load('services.yaml');
         $configuration = $this->getConfiguration($configs, $container);
@@ -39,8 +39,12 @@ class BrainbitsBlockingExtension extends Extension
 
         $config = $this->processConfiguration($configuration, $configs);
 
-        if (isset($config['predis'])) {
-            $container->setAlias('brainbits_blocking.predis', $config['predis']);
+        if (isset($config['storage']['predis'])) {
+            $container->setAlias('brainbits_blocking.predis', $config['storage']['predis']);
+        }
+
+        if (isset($config['clock'])) {
+            $container->setAlias('brainbits_blocking.clock', $config['clock']);
         }
 
         $container->setParameter('brainbits_blocking.interval', $config['block_interval']);
@@ -67,15 +71,15 @@ class BrainbitsBlockingExtension extends Extension
         }
 
         if ($config['storage']['driver'] !== 'custom') {
-            $xmlLoader->load(sprintf('storage/%s.xml', $config['storage']['driver']));
+            $yamlLoader->load(sprintf('storage/%s.yaml', $config['storage']['driver']));
         } else {
-            $container->setAlias('brainbits_blocking.storage', $config['storage']['service']);
+            $container->setAlias(StorageInterface::class, $config['storage']['service']);
         }
 
         if ($config['owner_factory']['driver'] !== 'custom') {
-            $xmlLoader->load(sprintf('owner_factory/%s.xml', $config['owner_factory']['driver']));
+            $yamlLoader->load(sprintf('owner_factory/%s.yaml', $config['owner_factory']['driver']));
         } else {
-            $container->setAlias('brainbits_blocking.owner_factory', $config['owner_factory']['service']);
+            $container->setAlias(OwnerFactoryInterface::class, $config['owner_factory']['service']);
         }
     }
 }

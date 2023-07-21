@@ -1,0 +1,5 @@
+services:
+    Brainbits\Blocking\Owner\OwnerFactoryInterface:
+        class: Brainbits\Blocking\Owner\ValueOwnerFactory
+        arguments:
+            - "%brainbits_blocking.owner_factory.value%"
