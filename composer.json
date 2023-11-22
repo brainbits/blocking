@@ -18,7 +18,7 @@
         "brainbits/phpcs-standard": "^7.0",
         "brainbits/phpstan-rules": "^3.0",
         "matthiasnoback/symfony-config-test": "^4.3",
-        "matthiasnoback/symfony-dependency-injection-test": "^4.3",
+        "matthiasnoback/symfony-dependency-injection-test": "^5.0",
         "mikey179/vfsstream": "^1.6.10",
         "phpstan/phpstan": "^1.0",
         "phpunit/phpunit": "^10.1",
