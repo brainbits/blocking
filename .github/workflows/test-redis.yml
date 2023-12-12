@@ -45,7 +45,7 @@ jobs:
         run: "composer update --prefer-dist --no-interaction --no-progress --no-suggest"
 
       - name: "Start Redis"
-        uses: "supercharge/redis-github-action@1.5.0"
+        uses: "supercharge/redis-github-action@1.8.0"
         with:
           redis-version: "6"
 
