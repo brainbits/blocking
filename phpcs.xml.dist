@@ -20,7 +20,6 @@
     <arg value="s"/>
 
     <rule ref="Brainbits">
-        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming.SuperfluousSuffix" />
         <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix" />
     </rule>
