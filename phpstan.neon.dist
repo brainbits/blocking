@@ -4,6 +4,10 @@ parameters:
         - src
     bootstrapFiles:
         - vendor/autoload.php
+    ignoreErrors:
+    		-
+    			message: '#Strict comparison using === between Brainbits\\Blocking\\Bundle\\DependencyInjection\\Configuration and null will always evaluate to false#'
+    			path: src/Bundle/DependencyInjection/BrainbitsBlockingExtension.php
 includes:
     - vendor/brainbits/phpstan-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon
