@@ -15,6 +15,7 @@ jobs:
         dependencies: ["lowest", "highest"]
         php-version:
           - "8.2"
+          - "8.3"
         operating-system: ["ubuntu-latest"]
 
     steps:
