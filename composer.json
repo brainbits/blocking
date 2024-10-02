@@ -18,10 +18,10 @@
         "brainbits/phpcs-standard": "^7.0.1",
         "brainbits/phpstan-rules": "^3.1",
         "matthiasnoback/symfony-config-test": "^5.1",
-        "matthiasnoback/symfony-dependency-injection-test": "^5.1",
+        "matthiasnoback/symfony-dependency-injection-test": "^6.0",
         "mikey179/vfsstream": "^1.6.11",
         "phpstan/phpstan": "^1.10.67",
-        "phpunit/phpunit": "^10.5",
+        "phpunit/phpunit": "^11.3.6",
         "predis/predis": "^2.2",
         "symfony/clock": "^6.4|^7.0",
         "symfony/config": "^6.4|^7.0",
@@ -42,7 +42,14 @@
         "phpspec/prophecy": "1.12.*"
     },
     "autoload": {
-        "psr-4": { "Brainbits\\Blocking\\": "src/" }
+        "psr-4": {
+            "Brainbits\\Blocking\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Brainbits\\Blocking\\Tests\\": "tests/"
+        }
     },
     "extra": {
         "branch-alias": {
