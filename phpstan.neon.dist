@@ -4,6 +4,9 @@ parameters:
         - src
     bootstrapFiles:
         - vendor/autoload.php
+    excludePaths:
+        # Declaring types for static function parameters is not possible
+        - src/Bundle/DependencyInjection/Configuration.php
 includes:
     - vendor/brainbits/phpstan-rules/rules.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon

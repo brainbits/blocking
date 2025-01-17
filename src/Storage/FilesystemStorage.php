@@ -22,13 +22,13 @@ use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\Owner;
 use DateTimeImmutable;
 use Psr\Clock\ClockInterface;
+use Throwable;
 
 use function assert;
 use function dirname;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
-use function is_array;
 use function is_string;
 use function is_writable;
 use function json_decode;
@@ -137,13 +137,16 @@ final class FilesystemStorage implements StorageInterface
         $metaContent = file_get_contents($metaFilename);
         assert(is_string($metaContent));
         assert($metaContent !== '');
+        /** @var array{ttl: int, updatedAt: string} $metaData */
         $metaData = json_decode($metaContent, true);
-        assert(is_array($metaData));
 
         $now = $this->clock->now();
-
-        $expiresAt = (new DateTimeImmutable((string) $metaData['updatedAt'], $now->getTimezone()))
-            ->modify('+' . $metaData['ttl'] . ' seconds');
+        try {
+            $expiresAt = (new DateTimeImmutable((string) $metaData['updatedAt'], $now->getTimezone()))
+                ->modify('+' . $metaData['ttl'] . ' seconds');
+        } catch (Throwable) {
+            throw UnserializeFailedException::createFromInput($metaContent);
+        }
 
         return $expiresAt > $now;
     }
@@ -162,16 +165,19 @@ final class FilesystemStorage implements StorageInterface
             throw UnserializeFailedException::createFromInput($content);
         }
 
+        /** @var array{identity: string, owner: string} $data */
         $data = json_decode($content, true);
 
-        assert(is_array($data));
-        assert($data['identity'] ?? false);
-        assert($data['owner'] ?? false);
+        try {
+            $block = new Block(
+                new BlockIdentity($data['identity']),
+                new Owner($data['owner']),
+            );
+        } catch (Throwable) {
+            throw UnserializeFailedException::createFromInput($content);
+        }
 
-        return new Block(
-            new BlockIdentity($data['identity']),
-            new Owner($data['owner']),
-        );
+        return $block;
     }
 
     private function getFilename(BlockIdentity $identifier): string
