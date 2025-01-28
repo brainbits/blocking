@@ -15,13 +15,13 @@ namespace Brainbits\Blocking\Storage;
 
 use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Exception\IOException;
+use Brainbits\Blocking\Exception\UnserializeFailedException;
 use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\Owner;
 use Predis\ClientInterface;
 use Predis\PredisException;
+use Throwable;
 
-use function assert;
-use function is_array;
 use function json_decode;
 use function json_encode;
 
@@ -110,16 +110,19 @@ final readonly class PredisStorage implements StorageInterface
             throw IOException::getFailed((string) $identity);
         }
 
+        /** @var array{identity: string, owner: string} $data */
         $data = json_decode($content, true);
 
-        assert(is_array($data));
-        assert($data['identity'] ?? false);
-        assert($data['owner'] ?? false);
+        try {
+            $block = new Block(
+                new BlockIdentity($data['identity']),
+                new Owner($data['owner']),
+            );
+        } catch (Throwable) {
+            throw UnserializeFailedException::createFromInput($content);
+        }
 
-        return new Block(
-            new BlockIdentity($data['identity']),
-            new Owner($data['owner']),
-        );
+        return $block;
     }
 
     private function createKey(BlockIdentity $identity): string

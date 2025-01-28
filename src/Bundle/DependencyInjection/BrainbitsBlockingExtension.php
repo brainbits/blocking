@@ -20,7 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-use function assert;
 use function sprintf;
 
 class BrainbitsBlockingExtension extends Extension
@@ -32,8 +31,11 @@ class BrainbitsBlockingExtension extends Extension
         $yamlLoader->load('services.yaml');
         $configuration = $this->getConfiguration($configs, $container);
 
-        assert($configuration instanceof Configuration);
-
+        /** @var array{
+         *     storage: non-empty-array<string>,
+         *     clock?: class-string,
+         *     block_interval: int,
+         *     owner_factory: array{value?: string, driver: string, service: string}} $config */
         $config = $this->processConfiguration($configuration, $configs);
 
         if (isset($config['storage']['predis'])) {

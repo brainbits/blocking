@@ -15,7 +15,7 @@ namespace Brainbits\Blocking\Tests\Functional;
 
 use Brainbits\Blocking\Block;
 use Brainbits\Blocking\Blocker;
-use Brainbits\Blocking\Exception\BlockFailedException;
+use Brainbits\Blocking\Exception\AlreadyBlockedException;
 use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\Owner;
 use Brainbits\Blocking\Owner\ValueOwnerFactory;
@@ -56,7 +56,7 @@ class InMemoryTest extends TestCase
 
     public function testOtherBlock(): void
     {
-        $this->expectException(BlockFailedException::class);
+        $this->expectException(AlreadyBlockedException::class);
         $this->expectExceptionMessage('Identifier my_item is already blocked.');
 
         $storage = new InMemoryStorage($this->clock);
