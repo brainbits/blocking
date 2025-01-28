@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Brainbits\Blocking;
 
-use Brainbits\Blocking\Exception\BlockFailedException;
+use Brainbits\Blocking\Exception\AlreadyBlockedException;
 use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\OwnerFactoryInterface;
 use Brainbits\Blocking\Storage\StorageInterface;
@@ -32,7 +32,7 @@ final readonly class Blocker
         $block = $this->tryBlock($identifier, $ttl);
 
         if ($block === null) {
-            throw BlockFailedException::createAlreadyBlocked($identifier);
+            throw AlreadyBlockedException::createAlreadyBlocked($identifier);
         }
 
         return $block;

@@ -17,7 +17,7 @@ use Brainbits\Blocking\Identity\BlockIdentity;
 
 use function sprintf;
 
-class BlockFailedException extends RuntimeException
+class AlreadyBlockedException extends RuntimeException
 {
     public static function createAlreadyBlocked(BlockIdentity $identity): self
     {

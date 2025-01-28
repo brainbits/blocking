@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Brainbits\Blocking\Tests\Functional;
 
 use Brainbits\Blocking\Blocker;
-use Brainbits\Blocking\Exception\BlockFailedException;
+use Brainbits\Blocking\Exception\AlreadyBlockedException;
 use Brainbits\Blocking\Identity\BlockIdentity;
 use Brainbits\Blocking\Owner\ValueOwnerFactory;
 use Brainbits\Blocking\Storage\PredisStorage;
@@ -67,7 +67,7 @@ class PredisTest extends TestCase
 
     public function testOtherBlock(): void
     {
-        $this->expectException(BlockFailedException::class);
+        $this->expectException(AlreadyBlockedException::class);
         $this->expectExceptionMessage('Identifier my_item is already blocked.');
 
         $this->client->set('block:my_item', json_encode(['identity' => 'my_item', 'owner' => 'other_owner']));
