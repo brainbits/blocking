@@ -17,7 +17,7 @@
     "require-dev": {
         "brainbits/phpcs-standard": "^7.0.1",
         "brainbits/phpstan-rules": "^4.0",
-        "matthiasnoback/symfony-config-test": "^5.1",
+        "matthiasnoback/symfony-config-test": "^6.0",
         "matthiasnoback/symfony-dependency-injection-test": "^6.0",
         "mikey179/vfsstream": "^1.6.11",
         "phpstan/phpstan": "^2.1.1",
